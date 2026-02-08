@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Скучно, но прибыльно — Калькуляторы</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: #0f1117;
+      color: #d0d8e8;
+      min-height: 100vh;
+    }
+    .header {
+      background: #1a1f2e;
+      padding: 16px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-bottom: 1px solid #2a334a;
+    }
+    .container {
+      padding: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+      padding-bottom: 100px; /* место под нижнюю навигацию */
+    }
+    .calc-card {
+      background: #1e2538;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .calc-title {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: #a0c0ff;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      color: #b8c8e0;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #3a455c;
+      background: #141b2a;
+      color: white;
+      font-size: 1rem;
+    }
+    button {
+      background: #5a9aff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    button:hover {
+      background: #6aaaff;
+    }
+    .result {
+      margin-top: 16px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #88ffaa;
+    }
+    .nav {
+      display: flex;
+      justify-content: center;
+      background: #1a1f2e;
+      padding: 12px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid #2a334a;
+    }
+    .nav a {
+      color: #a0c0ff;
+      font-size: 1rem;
+      text-decoration: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      background: rgba(90, 170, 255, 0.15);
+      transition: all 0.2s;
+    }
+    .nav a:hover {
+      background: rgba(90, 170, 255, 0.3);
+      color: white;
+    }
+    .nav i {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">Скучно, но прибыльно — Калькуляторы</div>
+
+<div class="container">
+
+  <!-- Калькулятор 1: Реальная доходность вклада -->
+  <div class="calc-card">
+    <div class="calc-title">Реальная доходность вклада</div>
+    <div class="input-group">
+      <label>Сумма вклада (₽)</label>
+      <input type="number" id="sum1" value="100000" min="1000">
+    </div>
+    <div class="input-group">
+      <label>Ставка по вкладу (% годовых)</label>
+      <input type="number" id="rate1" value="12" step="0.1">
+    </div>
+    <div class="input-group">
+      <label>Инфляция за год (%)</label>
+      <input type="number" id="infl1" value="7" step="0.1">
+    </div>
+    <button onclick="calc1()">Рассчитать</button>
+    <div class="result" id="result1">Результат появится здесь</div>
+  </div>
+
+  <!-- Калькулятор 2: Потери от девальвации -->
+  <div class="calc-card">
+    <div class="calc-title">Потери от девальвации рубля</div>
+    <div class="input-group">
+      <label>Сумма в рублях сейчас</label>
+      <input type="number" id="sum2" value="500000" min="1000">
+    </div>
+    <div class="input-group">
+      <label>Ожидаемая девальвация за год (%)</label>
+      <input type="number" id="dev2" value="15" step="0.1">
+    </div>
+    <button onclick="calc2()">Рассчитать</button>
+    <div class="result" id="result2">Результат появится здесь</div>
+  </div>
+
+  <!-- Калькулятор 3: Реальная стоимость зарплаты -->
+  <div class="calc-card">
+    <div class="calc-title">Реальная стоимость твоей зарплаты</div>
+    <div class="input-group">
+      <label>Текущая зарплата (₽ в месяц)</label>
+      <input type="number" id="salary3" value="80000">
+    </div>
+    <div class="input-group">
+      <label>Инфляция за год (%)</label>
+      <input type="number" id="infl3" value="8" step="0.1">
+    </div>
+    <button onclick="calc3()">Рассчитать</button>
+    <div class="result" id="result3">Результат появится здесь</div>
+  </div>
+
+</div>
+
+<!-- Нижняя навигация только со ссылкой на канал -->
+<div class="nav">
+  <a href="https://t.me/s_p_finance" target="_blank">
+    <i class="fab fa-telegram-plane"></i> Перейти в канал
+  </a>
+</div>
+
+<script>
+  // Инициализация Telegram Web App
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
+
+  function calc1() {
+    const sum = parseFloat(document.getElementById('sum1').value);
+    const rate = parseFloat(document.getElementById('rate1').value) / 100;
+    const infl = parseFloat(document.getElementById('infl1').value) / 100;
+    const profit = sum * rate;
+    const realProfit = profit - (sum * infl);
+    const realRate = (realProfit / sum) * 100;
+    document.getElementById('result1').innerHTML = 
+      `Через год: ${Math.round(profit).toLocaleString()} ₽ дохода<br>` +
+      `Реальная доходность: ${realRate.toFixed(2)}% (с учётом инфляции)`;
+  }
+
+  function calc2() {
+    const sum = parseFloat(document.getElementById('sum2').value);
+    const dev = parseFloat(document.getElementById('dev2').value) / 100;
+    const loss = sum * dev;
+    document.getElementById('result2').innerHTML = 
+      `Потери в валюте: ${Math.round(loss).toLocaleString()} ₽<br>` +
+      `Остаток покупательной способности: ${Math.round(sum * (1 - dev)).toLocaleString()} ₽`;
+  }
+
+  function calc3() {
+    const salary = parseFloat(document.getElementById('salary3').value);
+    const infl = parseFloat(document.getElementById('infl3').value) / 100;
+    const realSalary = salary * (1 - infl);
+    document.getElementById('result3').innerHTML = 
+      `Через год реальная зарплата: ${Math.round(realSalary).toLocaleString()} ₽<br>` +
+      `Потеря покупательной способности: ${Math.round(salary * infl).toLocaleString()} ₽`;
+  }
+</script>
+
+</body>
+</html>
