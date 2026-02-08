@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Скучно, но прибыльно — Калькуляторы</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -10,84 +10,99 @@
       margin: 0;
       padding: 0;
       font-family: system-ui, sans-serif;
-      background: #0f1117;
+      background: #0b0e17;
       color: #d0d8e8;
       min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 280px;
+      background: #141b2a;
+      border-right: 1px solid #2a334a;
+      padding: 32px 16px;
+      overflow-y: auto;
+      position: fixed;
+      height: 100%;
+      z-index: 20;
+    }
+    .sidebar h2 {
+      font-size: 1.6rem;
+      color: #a0d0ff;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .rate {
+      margin: 16px 0;
+      font-size: 1.15rem;
+      text-align: center;
+    }
+    .rate span {
+      font-weight: bold;
+      color: #88ffaa;
+      font-size: 1.3rem;
+    }
+    .main-content {
+      flex: 1;
+      margin-left: 320px; /* увеличенный отступ от курсов */
+      padding: 80px 40px 120px;
     }
     .header {
-      background: #1a1f2e;
-      padding: 16px;
       text-align: center;
-      font-size: 1.4rem;
-      font-weight: bold;
-      border-bottom: 1px solid #2a334a;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #a0d0ff;
+      margin-bottom: 60px;
       position: sticky;
       top: 0;
+      background: #0b0e17;
+      padding: 16px 0;
       z-index: 10;
     }
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-      min-height: calc(100vh - 140px);
+    .calc-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 20px;
-      padding-bottom: 100px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px; /* увеличенный зазор между карточками */
+      max-width: 1000px;
+      margin: 0 auto;
     }
     .calc-card {
       background: #1e2538;
       border-radius: 16px;
-      padding: 24px 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      padding: 32px 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.25s;
+      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      text-align: center;
+      min-height: 240px;
     }
-    /* Hover-эффект ТОЛЬКО на карточках списка (главный экран) */
-    #calc-list .calc-card:hover {
+    .calc-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(90, 170, 255, 0.3);
       background: #252e44;
-      transform: translateY(-6px) scale(1.03);
-      box-shadow: 0 12px 30px rgba(90, 170, 255, 0.25);
-    }
-    /* Внутри калькулятора — никаких hover-эффектов */
-    .calc-screen .calc-card,
-    .calc-screen input,
-    .calc-screen button,
-    .calc-screen select {
-      transition: none;
-    }
-    .calc-screen .calc-card:hover,
-    .calc-screen input:hover,
-    .calc-screen button:hover,
-    .calc-screen select:hover {
-      background: #1e2538 !important;
-      transform: none !important;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
     }
     .calc-icon {
-      font-size: 3.2rem;
-      margin-bottom: 12px;
-      opacity: 0.9;
+      font-size: 4rem;
+      margin-bottom: 16px;
     }
     .calc-title {
-      font-size: 1.35rem;
+      font-size: 1.5rem;
       color: #a0c0ff;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
     .calc-desc {
-      font-size: 0.95rem;
-      color: #b8c8e0;
-      opacity: 0.85;
+      font-size: 1rem;
+      color: #b0c8e0;
+      opacity: 0.9;
     }
     .calc-screen {
       display: none;
       padding: 20px;
+      max-width: 700px;
+      margin: 0 auto;
     }
     .calc-screen.active {
       display: block;
@@ -96,216 +111,232 @@
       background: #3a455c;
       color: white;
       border: none;
-      padding: 12px 28px;
-      border-radius: 10px;
-      font-size: 1.1rem;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 1.2rem;
       cursor: pointer;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
     .back-btn:hover {
       background: #4a556c;
     }
     .input-group {
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
     label {
       display: block;
       margin-bottom: 8px;
-      font-size: 0.98rem;
+      font-size: 1rem;
       color: #b8c8e0;
     }
     input, select {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border-radius: 10px;
       border: 1px solid #3a455c;
       background: #141b2a;
       color: white;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
     }
     button {
       background: #5a9aff;
       color: white;
       border: none;
-      padding: 14px 28px;
+      padding: 14px 32px;
       border-radius: 10px;
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       cursor: pointer;
-      margin-top: 14px;
+      margin-top: 16px;
     }
     button:hover {
       background: #6aaaff;
     }
     .result {
-      margin-top: 20px;
-      font-size: 1.3rem;
+      margin-top: 24px;
+      font-size: 1.4rem;
       font-weight: bold;
       color: #88ffaa;
       text-align: center;
     }
     .nav {
-      display: flex;
-      justify-content: center;
-      background: #1a1f2e;
-      padding: 16px;
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
+      background: #1a1f2e;
+      padding: 16px;
+      text-align: center;
       border-top: 1px solid #2a334a;
       z-index: 100;
     }
     .nav a {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 12px;
       color: #a0c0ff;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 500;
       text-decoration: none;
-      padding: 12px 32px;
+      padding: 12px 40px;
       border-radius: 12px;
-      background: rgba(90, 170, 255, 0.2);
+      background: rgba(90, 170, 255, 0.18);
       transition: all 0.25s;
     }
     .nav a:hover {
-      background: rgba(90, 170, 255, 0.4);
+      background: rgba(90, 170, 255, 0.35);
       color: white;
-      transform: translateY(-2px);
     }
     .nav i {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
 
-    @media (max-width: 700px) {
-      .container {
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid #2a334a;
+        padding: 16px;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .calc-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      .calc-card {
-        padding: 20px;
-      }
-      .calc-icon {
-        font-size: 2.8rem;
       }
     }
   </style>
 </head>
 <body>
 
-<div class="header">Скучно, но прибыльно — Калькуляторы</div>
-
-<div class="container" id="calc-list">
-
-  <div class="calc-card" onclick="showCalc('calc1')">
-    <div class="calc-icon">💰</div>
-    <div class="calc-title">Реальная доходность вклада</div>
-    <div class="calc-desc">Сколько реально останется после инфляции</div>
-  </div>
-
-  <div class="calc-card" onclick="showCalc('calc2')">
-    <div class="calc-icon">📉</div>
-    <div class="calc-title">Потери от девальвации</div>
-    <div class="calc-desc">Как девальвация рубля съедает сбережения</div>
-  </div>
-
-  <div class="calc-card" onclick="showCalc('calc3')">
-    <div class="calc-icon">💸</div>
-    <div class="calc-title">Реальная стоимость зарплаты</div>
-    <div class="calc-desc">Что останется от зарплаты через год</div>
-  </div>
-
-  <div class="calc-card" onclick="showCalc('calc4')">
-    <div class="calc-icon">📈</div>
-    <div class="calc-title">Сложные проценты</div>
-    <div class="calc-desc">Как растут деньги при капитализации</div>
-  </div>
-
+<!-- Боковая панель с курсами (без лишнего текста) -->
+<div class="sidebar">
+  <h2>Курсы ЦБ РФ</h2>
+  <div class="rate">USD: <span id="usd">— ₽</span></div>
+  <div class="rate">EUR: <span id="eur">— ₽</span></div>
+  <div class="rate">CNY: <span id="cny">— ₽</span></div>
 </div>
 
-<!-- Экраны калькуляторов -->
-<div id="calc1" class="calc-screen">
-  <button class="back-btn" onclick="backToList()">← Назад</button>
-  <div class="calc-card">
-    <div class="calc-title">Реальная доходность вклада</div>
-    <div class="input-group">
-      <label>Сумма вклада (₽)</label>
-      <input type="number" id="sum1" value="100000" min="1000">
-    </div>
-    <div class="input-group">
-      <label>Ставка по вкладу (% годовых)</label>
-      <input type="number" id="rate1" value="12" step="0.1">
-    </div>
-    <div class="input-group">
-      <label>Инфляция за год (%)</label>
-      <input type="number" id="infl1" value="7" step="0.1">
-    </div>
-    <button onclick="calc1()">Рассчитать</button>
-    <div class="result" id="result1">Результат появится здесь</div>
-  </div>
-</div>
+<!-- Основной контент -->
+<div class="main-content">
 
-<div id="calc2" class="calc-screen">
-  <button class="back-btn" onclick="backToList()">← Назад</button>
-  <div class="calc-card">
-    <div class="calc-title">Потери от девальвации рубля</div>
-    <div class="input-group">
-      <label>Сумма в рублях сейчас</label>
-      <input type="number" id="sum2" value="500000" min="1000">
-    </div>
-    <div class="input-group">
-      <label>Ожидаемая девальвация за год (%)</label>
-      <input type="number" id="dev2" value="15" step="0.1">
-    </div>
-    <button onclick="calc2()">Рассчитать</button>
-    <div class="result" id="result2">Результат появится здесь</div>
-  </div>
-</div>
+  <div class="header">Скучно, но прибыльно</div>
 
-<div id="calc3" class="calc-screen">
-  <button class="back-btn" onclick="backToList()">← Назад</button>
-  <div class="calc-card">
-    <div class="calc-title">Реальная стоимость зарплаты</div>
-    <div class="input-group">
-      <label>Текущая зарплата (₽ в месяц)</label>
-      <input type="number" id="salary3" value="80000">
-    </div>
-    <div class="input-group">
-      <label>Инфляция за год (%)</label>
-      <input type="number" id="infl3" value="8" step="0.1">
-    </div>
-    <button onclick="calc3()">Рассчитать</button>
-    <div class="result" id="result3">Результат появится здесь</div>
-  </div>
-</div>
+  <div class="calc-grid" id="calc-list">
 
-<div id="calc4" class="calc-screen">
-  <button class="back-btn" onclick="backToList()">← Назад</button>
-  <div class="calc-card">
-    <div class="calc-title">Сложные проценты</div>
-    <div class="input-group">
-      <label>Начальная сумма (₽)</label>
-      <input type="number" id="principal" value="100000" min="1000">
+    <div class="calc-card" onclick="showCalc('calc1')">
+      <div class="calc-icon">💰</div>
+      <div class="calc-title">Реальная доходность вклада</div>
+      <div class="calc-desc">Сколько реально останется после инфляции</div>
     </div>
-    <div class="input-group">
-      <label>Годовая ставка (%)</label>
-      <input type="number" id="rate4" value="10" step="0.1">
+
+    <div class="calc-card" onclick="showCalc('calc2')">
+      <div class="calc-icon">📉</div>
+      <div class="calc-title">Потери от девальвации</div>
+      <div class="calc-desc">Как девальвация рубля съедает сбережения</div>
     </div>
-    <div class="input-group">
-      <label>Срок (лет)</label>
-      <input type="number" id="years" value="5" min="1">
+
+    <div class="calc-card" onclick="showCalc('calc3')">
+      <div class="calc-icon">💸</div>
+      <div class="calc-title">Реальная стоимость зарплаты</div>
+      <div class="calc-desc">Что останется от зарплаты через год</div>
     </div>
-    <div class="input-group">
-      <label>Капитализация</label>
-      <select id="compound">
-        <option value="1">Ежегодно</option>
-        <option value="4">Ежеквартально</option>
-        <option value="12" selected>Ежемесячно</option>
-      </select>
+
+    <div class="calc-card" onclick="showCalc('calc4')">
+      <div class="calc-icon">📈</div>
+      <div class="calc-title">Сложные проценты</div>
+      <div class="calc-desc">Как растут деньги при капитализации</div>
     </div>
-    <button onclick="calc4()">Рассчитать</button>
-    <div class="result" id="result4">Результат появится здесь</div>
+
   </div>
+
+  <!-- Окна калькуляторов (без изменений) -->
+  <div id="calc1" class="calc-screen">
+    <button class="back-btn" onclick="backToList()">← На главную</button>
+    <div class="calc-card">
+      <div class="calc-title">Реальная доходность вклада</div>
+      <div class="input-group">
+        <label>Сумма вклада (₽)</label>
+        <input type="number" id="sum1" value="100000" min="1000">
+      </div>
+      <div class="input-group">
+        <label>Ставка по вкладу (% годовых)</label>
+        <input type="number" id="rate1" value="12" step="0.1">
+      </div>
+      <div class="input-group">
+        <label>Инфляция за год (%)</label>
+        <input type="number" id="infl1" value="7" step="0.1">
+      </div>
+      <button onclick="calc1()">Рассчитать</button>
+      <div class="result" id="result1">Результат появится здесь</div>
+    </div>
+  </div>
+
+  <div id="calc2" class="calc-screen">
+    <button class="back-btn" onclick="backToList()">← На главную</button>
+    <div class="calc-card">
+      <div class="calc-title">Потери от девальвации рубля</div>
+      <div class="input-group">
+        <label>Сумма в рублях сейчас</label>
+        <input type="number" id="sum2" value="500000" min="1000">
+      </div>
+      <div class="input-group">
+        <label>Ожидаемая девальвация за год (%)</label>
+        <input type="number" id="dev2" value="15" step="0.1">
+      </div>
+      <button onclick="calc2()">Рассчитать</button>
+      <div class="result" id="result2">Результат появится здесь</div>
+    </div>
+  </div>
+
+  <div id="calc3" class="calc-screen">
+    <button class="back-btn" onclick="backToList()">← На главную</button>
+    <div class="calc-card">
+      <div class="calc-title">Реальная стоимость зарплаты</div>
+      <div class="input-group">
+        <label>Текущая зарплата (₽ в месяц)</label>
+        <input type="number" id="salary3" value="80000">
+      </div>
+      <div class="input-group">
+        <label>Инфляция за год (%)</label>
+        <input type="number" id="infl3" value="8" step="0.1">
+      </div>
+      <button onclick="calc3()">Рассчитать</button>
+      <div class="result" id="result3">Результат появится здесь</div>
+    </div>
+  </div>
+
+  <div id="calc4" class="calc-screen">
+    <button class="back-btn" onclick="backToList()">← На главную</button>
+    <div class="calc-card">
+      <div class="calc-title">Сложные проценты</div>
+      <div class="input-group">
+        <label>Начальная сумма (₽)</label>
+        <input type="number" id="principal" value="100000" min="1000">
+      </div>
+      <div class="input-group">
+        <label>Годовая ставка (%)</label>
+        <input type="number" id="rate4" value="10" step="0.1">
+      </div>
+      <div class="input-group">
+        <label>Срок (лет)</label>
+        <input type="number" id="years" value="5" min="1">
+      </div>
+      <div class="input-group">
+        <label>Капитализация</label>
+        <select id="compound">
+          <option value="1">Ежегодно</option>
+          <option value="4">Ежеквартально</option>
+          <option value="12" selected>Ежемесячно</option>
+        </select>
+      </div>
+      <button onclick="calc4()">Рассчитать</button>
+      <div class="result" id="result4">Результат появится здесь</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Нижняя панель со ссылкой на канал -->
@@ -318,6 +349,28 @@
 <script>
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
+
+  async function loadRates() {
+    try {
+      const response = await fetch('https://www.cbr-xml-daily.ru/daily_json.js');
+      const data = await response.json();
+
+      const usd = data.Valute.USD.Value.toFixed(2);
+      const eur = data.Valute.EUR.Value.toFixed(2);
+      const cny = data.Valute.CNY.Value.toFixed(2);
+
+      document.getElementById('usd').textContent = `${usd} ₽`;
+      document.getElementById('eur').textContent = `${eur} ₽`;
+      document.getElementById('cny').textContent = `${cny} ₽`;
+    } catch (e) {
+      document.getElementById('usd').textContent = '— ₽';
+      document.getElementById('eur').textContent = '— ₽';
+      document.getElementById('cny').textContent = '— ₽';
+    }
+  }
+
+  loadRates();
+  setInterval(loadRates, 60000);
 
   function showCalc(calcId) {
     document.getElementById('calc-list').style.display = 'none';
