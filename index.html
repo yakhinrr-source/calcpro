@@ -21,89 +21,159 @@
       font-size: 1.4rem;
       font-weight: bold;
       border-bottom: 1px solid #2a334a;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .container {
-      padding: 16px;
-      max-width: 800px;
+      padding: 20px;
+      max-width: 900px;
       margin: 0 auto;
-      padding-bottom: 100px; /* место под нижнюю навигацию */
+      min-height: calc(100vh - 140px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 20px;
+      padding-bottom: 100px;
     }
     .calc-card {
       background: #1e2538;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .calc-card:hover {
+      background: #252e44;
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 12px 30px rgba(90, 170, 255, 0.25);
+    }
+    .calc-icon {
+      font-size: 3.2rem;
+      margin-bottom: 12px;
+      opacity: 0.9;
     }
     .calc-title {
-      font-size: 1.3rem;
-      margin-bottom: 12px;
+      font-size: 1.35rem;
       color: #a0c0ff;
+      margin-bottom: 8px;
+    }
+    .calc-desc {
+      font-size: 0.95rem;
+      color: #b8c8e0;
+      opacity: 0.85;
+    }
+    .calc-screen {
+      display: none;
+      padding: 20px;
+    }
+    .calc-screen.active {
+      display: block;
+    }
+    .back-btn {
+      background: #3a455c;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-bottom: 24px;
+    }
+    .back-btn:hover {
+      background: #4a556c;
     }
     .input-group {
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     label {
       display: block;
-      margin-bottom: 6px;
-      font-size: 0.95rem;
+      margin-bottom: 8px;
+      font-size: 0.98rem;
       color: #b8c8e0;
     }
     input, select {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 10px;
       border: 1px solid #3a455c;
       background: #141b2a;
       color: white;
-      font-size: 1rem;
+      font-size: 1.05rem;
     }
     button {
       background: #5a9aff;
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 1.1rem;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1.15rem;
       cursor: pointer;
-      margin-top: 12px;
+      margin-top: 14px;
     }
     button:hover {
       background: #6aaaff;
     }
     .result {
-      margin-top: 16px;
-      font-size: 1.2rem;
+      margin-top: 20px;
+      font-size: 1.3rem;
       font-weight: bold;
       color: #88ffaa;
+      text-align: center;
     }
     .nav {
       display: flex;
       justify-content: center;
       background: #1a1f2e;
-      padding: 12px;
+      padding: 16px;
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       border-top: 1px solid #2a334a;
+      z-index: 100;
     }
     .nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       color: #a0c0ff;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      font-weight: 500;
       text-decoration: none;
-      padding: 8px 20px;
-      border-radius: 8px;
-      background: rgba(90, 170, 255, 0.15);
-      transition: all 0.2s;
+      padding: 12px 32px;
+      border-radius: 12px;
+      background: rgba(90, 170, 255, 0.2);
+      transition: all 0.25s;
     }
     .nav a:hover {
-      background: rgba(90, 170, 255, 0.3);
+      background: rgba(90, 170, 255, 0.4);
       color: white;
+      transform: translateY(-2px);
     }
     .nav i {
-      margin-right: 8px;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .calc-card {
+        padding: 20px;
+      }
+      .calc-icon {
+        font-size: 2.8rem;
+      }
     }
   </style>
 </head>
@@ -111,9 +181,37 @@
 
 <div class="header">Скучно, но прибыльно — Калькуляторы</div>
 
-<div class="container">
+<div class="container" id="calc-list">
 
-  <!-- Калькулятор 1: Реальная доходность вклада -->
+  <div class="calc-card" onclick="showCalc('calc1')">
+    <div class="calc-icon">💰</div>
+    <div class="calc-title">Реальная доходность вклада</div>
+    <div class="calc-desc">Сколько реально останется после инфляции</div>
+  </div>
+
+  <div class="calc-card" onclick="showCalc('calc2')">
+    <div class="calc-icon">📉</div>
+    <div class="calc-title">Потери от девальвации</div>
+    <div class="calc-desc">Как девальвация рубля съедает сбережения</div>
+  </div>
+
+  <div class="calc-card" onclick="showCalc('calc3')">
+    <div class="calc-icon">💸</div>
+    <div class="calc-title">Реальная стоимость зарплаты</div>
+    <div class="calc-desc">Что останется от зарплаты через год</div>
+  </div>
+
+  <div class="calc-card" onclick="showCalc('calc4')">
+    <div class="calc-icon">📈</div>
+    <div class="calc-title">Сложные проценты</div>
+    <div class="calc-desc">Как растут деньги при капитализации</div>
+  </div>
+
+</div>
+
+<!-- Экраны калькуляторов -->
+<div id="calc1" class="calc-screen">
+  <button class="back-btn" onclick="backToList()">← Назад</button>
   <div class="calc-card">
     <div class="calc-title">Реальная доходность вклада</div>
     <div class="input-group">
@@ -131,8 +229,10 @@
     <button onclick="calc1()">Рассчитать</button>
     <div class="result" id="result1">Результат появится здесь</div>
   </div>
+</div>
 
-  <!-- Калькулятор 2: Потери от девальвации -->
+<div id="calc2" class="calc-screen">
+  <button class="back-btn" onclick="backToList()">← Назад</button>
   <div class="calc-card">
     <div class="calc-title">Потери от девальвации рубля</div>
     <div class="input-group">
@@ -146,10 +246,12 @@
     <button onclick="calc2()">Рассчитать</button>
     <div class="result" id="result2">Результат появится здесь</div>
   </div>
+</div>
 
-  <!-- Калькулятор 3: Реальная стоимость зарплаты -->
+<div id="calc3" class="calc-screen">
+  <button class="back-btn" onclick="backToList()">← Назад</button>
   <div class="calc-card">
-    <div class="calc-title">Реальная стоимость твоей зарплаты</div>
+    <div class="calc-title">Реальная стоимость зарплаты</div>
     <div class="input-group">
       <label>Текущая зарплата (₽ в месяц)</label>
       <input type="number" id="salary3" value="80000">
@@ -161,49 +263,103 @@
     <button onclick="calc3()">Рассчитать</button>
     <div class="result" id="result3">Результат появится здесь</div>
   </div>
-
 </div>
 
-<!-- Нижняя навигация только со ссылкой на канал -->
+<div id="calc4" class="calc-screen">
+  <button class="back-btn" onclick="backToList()">← Назад</button>
+  <div class="calc-card">
+    <div class="calc-title">Сложные проценты</div>
+    <div class="input-group">
+      <label>Начальная сумма (₽)</label>
+      <input type="number" id="principal" value="100000" min="1000">
+    </div>
+    <div class="input-group">
+      <label>Годовая ставка (%)</label>
+      <input type="number" id="rate4" value="10" step="0.1">
+    </div>
+    <div class="input-group">
+      <label>Срок (лет)</label>
+      <input type="number" id="years" value="5" min="1">
+    </div>
+    <div class="input-group">
+      <label>Капитализация</label>
+      <select id="compound">
+        <option value="1">Ежегодно</option>
+        <option value="4">Ежеквартально</option>
+        <option value="12" selected>Ежемесячно</option>
+      </select>
+    </div>
+    <button onclick="calc4()">Рассчитать</button>
+    <div class="result" id="result4">Результат появится здесь</div>
+  </div>
+</div>
+
+<!-- Нижняя панель со ссылкой на канал -->
 <div class="nav">
-  <a href="https://t.me/s_p_finance" target="_blank">
+  <a href="https://t.me/s_p_finance" target="_blank" rel="noopener noreferrer">
     <i class="fab fa-telegram-plane"></i> Перейти в канал
   </a>
 </div>
 
 <script>
-  // Инициализация Telegram Web App
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
 
+  function showCalc(calcId) {
+    document.getElementById('calc-list').style.display = 'none';
+    document.querySelectorAll('.calc-screen').forEach(el => el.classList.remove('active'));
+    document.getElementById(calcId).classList.add('active');
+  }
+
+  function backToList() {
+    document.querySelectorAll('.calc-screen').forEach(el => el.classList.remove('active'));
+    document.getElementById('calc-list').style.display = 'grid';
+  }
+
   function calc1() {
-    const sum = parseFloat(document.getElementById('sum1').value);
-    const rate = parseFloat(document.getElementById('rate1').value) / 100;
-    const infl = parseFloat(document.getElementById('infl1').value) / 100;
+    const sum = parseFloat(document.getElementById('sum1').value) || 0;
+    const rate = parseFloat(document.getElementById('rate1').value) / 100 || 0;
+    const infl = parseFloat(document.getElementById('infl1').value) / 100 || 0;
     const profit = sum * rate;
     const realProfit = profit - (sum * infl);
-    const realRate = (realProfit / sum) * 100;
+    const realRate = sum > 0 ? (realProfit / sum) * 100 : 0;
     document.getElementById('result1').innerHTML = 
       `Через год: ${Math.round(profit).toLocaleString()} ₽ дохода<br>` +
-      `Реальная доходность: ${realRate.toFixed(2)}% (с учётом инфляции)`;
+      `Реальная доходность: ${realRate.toFixed(2)}%`;
   }
 
   function calc2() {
-    const sum = parseFloat(document.getElementById('sum2').value);
-    const dev = parseFloat(document.getElementById('dev2').value) / 100;
+    const sum = parseFloat(document.getElementById('sum2').value) || 0;
+    const dev = parseFloat(document.getElementById('dev2').value) / 100 || 0;
     const loss = sum * dev;
     document.getElementById('result2').innerHTML = 
-      `Потери в валюте: ${Math.round(loss).toLocaleString()} ₽<br>` +
-      `Остаток покупательной способности: ${Math.round(sum * (1 - dev)).toLocaleString()} ₽`;
+      `Потери: ${Math.round(loss).toLocaleString()} ₽<br>` +
+      `Остаток: ${Math.round(sum * (1 - dev)).toLocaleString()} ₽`;
   }
 
   function calc3() {
-    const salary = parseFloat(document.getElementById('salary3').value);
-    const infl = parseFloat(document.getElementById('infl3').value) / 100;
+    const salary = parseFloat(document.getElementById('salary3').value) || 0;
+    const infl = parseFloat(document.getElementById('infl3').value) / 100 || 0;
     const realSalary = salary * (1 - infl);
     document.getElementById('result3').innerHTML = 
-      `Через год реальная зарплата: ${Math.round(realSalary).toLocaleString()} ₽<br>` +
-      `Потеря покупательной способности: ${Math.round(salary * infl).toLocaleString()} ₽`;
+      `Реальная зарплата: ${Math.round(realSalary).toLocaleString()} ₽<br>` +
+      `Потеря: ${Math.round(salary * infl).toLocaleString()} ₽`;
+  }
+
+  function calc4() {
+    const p = parseFloat(document.getElementById('principal').value) || 0;
+    const r = parseFloat(document.getElementById('rate4').value) / 100 || 0;
+    const t = parseFloat(document.getElementById('years').value) || 0;
+    const n = parseInt(document.getElementById('compound').value) || 12;
+
+    const amount = p * Math.pow(1 + r / n, n * t);
+    const profit = amount - p;
+    const effRate = (Math.pow(1 + r / n, n) - 1) * 100;
+
+    document.getElementById('result4').innerHTML = 
+      `Итог: ${Math.round(amount).toLocaleString()} ₽<br>` +
+      `Прибыль: ${Math.round(profit).toLocaleString()} ₽<br>` +
+      `Эффективная ставка: ${effRate.toFixed(2)}%`;
   }
 </script>
 
