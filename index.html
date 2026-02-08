@@ -48,13 +48,27 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      position: relative;
-      overflow: hidden;
     }
-    .calc-card:hover {
+    /* Hover-эффект ТОЛЬКО на карточках списка (главный экран) */
+    #calc-list .calc-card:hover {
       background: #252e44;
       transform: translateY(-6px) scale(1.03);
       box-shadow: 0 12px 30px rgba(90, 170, 255, 0.25);
+    }
+    /* Внутри калькулятора — никаких hover-эффектов */
+    .calc-screen .calc-card,
+    .calc-screen input,
+    .calc-screen button,
+    .calc-screen select {
+      transition: none;
+    }
+    .calc-screen .calc-card:hover,
+    .calc-screen input:hover,
+    .calc-screen button:hover,
+    .calc-screen select:hover {
+      background: #1e2538 !important;
+      transform: none !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
     }
     .calc-icon {
       font-size: 3.2rem;
