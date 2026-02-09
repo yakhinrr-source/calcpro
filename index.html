@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Скучно, но прибыльно</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
 body{
@@ -72,12 +71,9 @@ margin-bottom:10px;
 }
 </style>
 </head>
-
 <body>
-
 <!-- ЛЕВАЯ КОЛОНКА -->
 <div class="sidebar">
-
 <!-- КУРСЫ -->
 <div class="card">
 <script src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js">
@@ -104,7 +100,6 @@ margin-bottom:10px;
 }
 </script>
 </div>
-
 <!-- НОВОСТИ -->
 <div class="card">
 <h3>Новости рынков</h3>
@@ -119,15 +114,11 @@ margin-bottom:10px;
 }
 </script>
 </div>
-
 </div>
-
 <!-- ПРАВАЯ ЧАСТЬ -->
 <div class="main">
-
 <img src="sovva.jpg" class="logo">
 <h1>Скучно, но прибыльно</h1>
-
 <!-- BTC -->
 <div class="card">
 <script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js">
@@ -142,7 +133,6 @@ margin-bottom:10px;
 }
 </script>
 </div>
-
 <!-- КАЛЬКУЛЯТОРЫ -->
 <div id="menu" class="grid">
 <div class="card calc" onclick="openCalc(1)">Реальная доходность</div>
@@ -150,31 +140,27 @@ margin-bottom:10px;
 <div class="card calc" onclick="openCalc(3)">Реальная зарплата</div>
 <div class="card calc" onclick="openCalc(4)">Сложные проценты</div>
 </div>
-
 <div id="calc" class="card hidden">
 <div class="back" onclick="back()">← Назад</div>
 <div id="content"></div>
 </div>
-
 <!-- КОНВЕРТЕР -->
 <div class="card">
 <h3>Конвертер валют</h3>
-<input id="amount" placeholder="Сумма">
+<input id="amount" placeholder="Сумма" value="10000">
 <select id="from"></select>
 <select id="to"></select>
 <button onclick="convert()">Конвертировать</button>
 <p id="result"></p>
+<p id="cbr-update" style="font-size:0.9rem;color:#94a3b8;margin-top:8px">Курсы ЦБ РФ • обновление...</p>
 </div>
-
 <!-- TG -->
 <div class="card">
 <a href="https://t.me/s_p_finance" target="_blank">
 📊 Telegram-канал «Скучно, но прибыльно»
 </a>
 </div>
-
 </div>
-
 <script>
 const calcs=[
 `<h3>Реальная доходность</h3>
@@ -182,24 +168,20 @@ const calcs=[
 <input id="p" placeholder="% дохода">
 <input id="i" placeholder="% инфляции">
 <button onclick="res(a.value*(1+p.value/100)/(1+i.value/100))">Рассчитать</button>`,
-
 `<h3>Потери от девальвации</h3>
 <input id="a" placeholder="Сумма">
 <input id="p" placeholder="% падения">
 <button onclick="res(a.value*(1-p.value/100))">Рассчитать</button>`,
-
 `<h3>Реальная зарплата</h3>
 <input id="a" placeholder="Зарплата">
 <input id="i" placeholder="% инфляции">
 <button onclick="res(a.value/(1+i.value/100))">Рассчитать</button>`,
-
 `<h3>Сложные проценты</h3>
 <input id="a" placeholder="Сумма">
 <input id="p" placeholder="% годовых">
 <input id="y" placeholder="Лет">
 <button onclick="res(a.value*Math.pow(1+p.value/100,y.value))">Рассчитать</button>`
 ];
-
 function openCalc(i){
 menu.classList.add("hidden");
 calc.classList.remove("hidden");
@@ -213,19 +195,58 @@ function res(v){
 content.innerHTML+=`<p><b>Результат:</b> ${Number(v).toFixed(2)}</p>`;
 }
 
-const curr=["USD","EUR","RUB","GBP","CNY","JPY","CHF","AUD","CAD","TRY","KZT","UAH","PLN","SEK","NOK"];
-curr.forEach(c=>{
-from.innerHTML+=`<option>${c}</option>`;
-to.innerHTML+=`<option>${c}</option>`;
-});
-to.value="RUB";
+// === РЕАЛЬНЫЕ КУРСЫ ЦБ РФ ===
+let cbrRates = { RUB: 1, USD: 92.45, EUR: 98.12, CNY: 12.78 }; // запасные
 
-const rates={USD:1,EUR:0.93,RUB:92,GBP:0.79,CNY:7.2,JPY:148,CHF:0.88,AUD:1.52,CAD:1.36,TRY:30,KZT:460,UAH:38,PLN:4,SEK:10.4,NOK:10.6};
+async function updateCBR() {
+  try {
+    const res = await fetch('https://www.cbr-xml-daily.ru/daily_json.js');
+    const data = await res.json();
 
-function convert(){
-result.innerText=(amount.value/rates[from.value]*rates[to.value]).toFixed(2)+" "+to.value;
+    cbrRates.USD = data.Valute.USD.Value;
+    cbrRates.EUR = data.Valute.EUR.Value;
+    cbrRates.CNY = data.Valute.CNY.Value;
+
+    document.getElementById('cbr-update').textContent = 
+      `Курсы ЦБ РФ • обновлено ${new Date().toLocaleTimeString('ru-RU')}`;
+  } catch(e) {
+    document.getElementById('cbr-update').textContent = 
+      `Курсы ЦБ РФ • ошибка загрузки (использованы запасные)`;
+  }
+
+  // Заполняем селекты
+  const fromSel = document.getElementById('from');
+  const toSel = document.getElementById('to');
+  fromSel.innerHTML = '';
+  toSel.innerHTML = '';
+  Object.keys(cbrRates).forEach(key => {
+    fromSel.innerHTML += `<option value="${key}">${key}</option>`;
+    toSel.innerHTML += `<option value="${key}">${key}</option>`;
+  });
+  toSel.value = 'RUB';
+}
+
+// Загружаем курсы сразу и каждые 60 секунд
+updateCBR();
+setInterval(updateCBR, 60000);
+
+// === КОНВЕРТЕР ===
+function convert() {
+  const amt = parseFloat(document.getElementById('amount').value) || 0;
+  const fr = document.getElementById('from').value;
+  const t = document.getElementById('to').value;
+
+  if (amt <= 0) {
+    document.getElementById('result').innerHTML = "Введите сумму > 0";
+    return;
+  }
+
+  const inRub = amt * cbrRates[fr];
+  const res = inRub / cbrRates[t];
+
+  document.getElementById('result').innerHTML = 
+    `${amt.toLocaleString()} ${fr} ≈ ${res.toFixed(2)} ${t}`;
 }
 </script>
-
 </body>
 </html>
