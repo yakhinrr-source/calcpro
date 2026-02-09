@@ -12,6 +12,7 @@
       --card: #111827;
       --text: #f1f5f9;
       --accent: #60a5fa;
+      --accent-dark: #3b82f6;
       --green: #34d399;
       --red: #f87171;
       --gray: #94a3b8;
@@ -30,7 +31,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      transition: 0.4s;
+      transition: all 0.4s;
     }
     .container { max-width: 1280px; margin: 0 auto; padding: 20px; }
     header {
@@ -41,7 +42,7 @@
       border-bottom: 1px solid var(--border);
     }
     .logo { width: 78px; border-radius: 50%; }
-    h1 { font-size: 2.1rem; }
+    h1 { font-size: 2.1rem; margin: 0; }
     .controls { display: flex; gap: 16px; align-items: center; }
     .lang-btn {
       padding: 8px 14px;
@@ -49,14 +50,15 @@
       background: var(--card);
       border-radius: 8px;
       cursor: pointer;
+      font-size: 0.95rem;
     }
-    .lang-btn.active { background: var(--accent); color: white; }
-    .theme-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; }
-    
+    .lang-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .theme-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--text); }
+
     .layout { display: flex; gap: 24px; margin-top: 24px; }
     .sidebar { width: 360px; }
     .main { flex: 1; }
-    
+
     .card {
       background: var(--card);
       border-radius: 16px;
@@ -75,11 +77,12 @@
       padding: 28px 16px;
       text-align: center;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s;
     }
-    .calc-card:hover { transform: translateY(-6px); background: #2563eb; }
-    .calc-card i { font-size: 2.4rem; margin-bottom: 12px; }
-    
+    .calc-card:hover { transform: translateY(-6px); background: #2563eb; color: white; }
+    .calc-card i { font-size: 2.4rem; margin-bottom: 12px; color: var(--accent); }
+    .calc-card h3 { font-size: 1.05rem; margin: 8px 0 0; }
+
     input, select, button {
       width: 100%;
       padding: 14px;
@@ -88,28 +91,58 @@
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
+      font-size: 1rem;
     }
-    body.light input, body.light select { background: #f1f5f9; color: #111827; }
-    button { background: var(--accent); font-weight: bold; cursor: pointer; }
-    button:hover { background: #2563eb; }
-    
-    .result { margin-top: 20px; padding: 16px; background: rgba(52,211,153,0.15); border-radius: 12px; font-size: 1.35rem; }
-    .back { color: var(--accent); cursor: pointer; font-size: 1.15rem; margin-bottom: 16px; }
+    body.light input, body.light select { background: #f1f5f9; color: #111827; border-color: #cbd5e1; }
+    button {
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: var(--accent-dark); }
+
+    .result {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(52,211,153,0.15);
+      border-radius: 12px;
+      color: var(--green);
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    .error { background: rgba(248,113,113,0.15); color: var(--red); }
+    .back {
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
     .hidden { display: none; }
     .chart-box { height: 340px; margin: 20px 0; }
-    
+
     .disclaimer {
       background: rgba(234,179,8,0.12);
+      border: 1px solid rgba(234,179,8,0.3);
       border-radius: 12px;
-      padding: 18px;
-      font-size: 0.95rem;
+      padding: 16px;
+      margin: 40px 0 20px;
+      font-size: 0.92rem;
       text-align: center;
-      margin-top: 40px;
+      color: #fbbf24;
     }
-    
+
     @media (max-width: 1024px) {
       .layout { flex-direction: column; }
       .sidebar { width: 100%; }
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.7rem; }
+      .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -118,24 +151,24 @@
 <div class="container">
   <header>
     <div style="display:flex; align-items:center; gap:16px;">
-      <img src="sovva.jpg" class="logo" alt="logo">
+      <img src="sovva.jpg" class="logo" alt="Логотип">
       <h1 data-ru="Скучно, но прибыльно" data-en="Boring but Profitable" data-ar="ممل لكن مربح">Скучно, но прибыльно</h1>
     </div>
-    
+
     <div class="controls">
-      <div class="lang-btn active" data-lang="ru">Рус</div>
-      <div class="lang-btn" data-lang="en">EN</div>
-      <div class="lang-btn" data-lang="ar">عربي</div>
+      <button class="lang-btn active" data-lang="ru">Рус</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ar">عربي</button>
       <button class="theme-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
     </div>
   </header>
 
   <div class="layout">
-    <!-- SIDEBAR -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <div class="card">
-        <h3 data-ru="Курсы ЦБ РФ" data-en="CBR Rates" data-ar="أسعار البنك المركزي">Курсы ЦБ РФ</h3>
-        <div id="ratesDisplay">Загрузка...</div>
+        <h3 data-ru="Курсы ЦБ РФ" data-en="CBR Rates" data-ar="أسعار البنك المركزي الروسي">Курсы ЦБ РФ</h3>
+        <div id="rates">Загрузка...</div>
       </div>
 
       <div class="card">
@@ -146,35 +179,32 @@
       </div>
 
       <div class="card">
-        <h3 data-ru="Новости" data-en="News" data-ar="أخبار">Новости</h3>
+        <h3 data-ru="Новости" data-en="News" data-ar="الأخبار">Новости</h3>
         <script src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js">
         {"colorTheme":"dark","isTransparent":true,"displayMode":"adaptive","locale":"ru","market":"crypto","height":"380"}
         </script>
       </div>
     </div>
 
-    <!-- MAIN -->
+    <!-- Main -->
     <div class="main">
-      <!-- BTC -->
       <div class="card">
         <script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js">
         {"symbol":"BINANCE:BTCUSDT","width":"100%","height":"240","locale":"ru","dateRange":"1D","colorTheme":"dark","isTransparent":true}
         </script>
       </div>
 
-      <!-- Калькуляторы -->
-      <div id="menu" class="grid">
-        <div class="calc-card" onclick="openCalc(1)"><i class="fas fa-percentage"></i><h3 data-ru="Реальная доходность" data-en="Real Yield" data-ar="العائد الحقيقي">Реальная доходность</h3></div>
-        <div class="calc-card" onclick="openCalc(2)"><i class="fas fa-arrow-down"></i><h3 data-ru="Девальвация" data-en="Devaluation" data-ar="التخفيض">Девальвация</h3></div>
-        <div class="calc-card" onclick="openCalc(3)"><i class="fas fa-wallet"></i><h3 data-ru="Реальная зарплата" data-en="Real Salary" data-ar="الراتب الحقيقي">Реальная зарплата</h3></div>
-        <div class="calc-card" onclick="openCalc(4)"><i class="fas fa-chart-line"></i><h3 data-ru="Сложный %" data-en="Compound %" data-ar="الفائدة المركبة">Сложный %</h3></div>
-        <div class="calc-card" onclick="openCalc(5)"><i class="fas fa-home"></i><h3 data-ru="Ипотека + досрочка" data-en="Mortgage" data-ar="الرهن العقاري">Ипотека + досрочка</h3></div>
-        <div class="calc-card" onclick="openCalc(6)"><i class="fas fa-bullseye"></i><h3 data-ru="Накопить на цель" data-en="Save Goal" data-ar="ادخار هدف">Накопить на цель</h3></div>
-        <div class="calc-card" onclick="openCalc(7)"><i class="fas fa-piggy-bank"></i><h3 data-ru="Налог на вклады" data-en="Deposit Tax" data-ar="ضريبة الودائع">Налог на вклады</h3></div>
-        <div class="calc-card" onclick="openCalc(8)"><i class="fas fa-hand-holding-dollar"></i><h3 data-ru="Прогрессивный НДФЛ" data-en="Progressive Tax" data-ar="الضريبة التصاعدية">Прогрессивный НДФЛ</h3></div>
+      <div id="calcMenu" class="grid">
+        <div class="calc-card" data-calc="1"><i class="fas fa-percentage"></i><h3 data-ru="Реальная доходность" data-en="Real Yield" data-ar="العائد الحقيقي">Реальная доходность</h3></div>
+        <div class="calc-card" data-calc="2"><i class="fas fa-ruble-sign"></i><h3 data-ru="Потери от девальвации" data-en="Devaluation Loss" data-ar="خسائر التخفيض">Потери от девальвации</h3></div>
+        <div class="calc-card" data-calc="3"><i class="fas fa-wallet"></i><h3 data-ru="Реальная зарплата" data-en="Real Salary" data-ar="الراتب الحقيقي">Реальная зарплата</h3></div>
+        <div class="calc-card" data-calc="4"><i class="fas fa-chart-line"></i><h3 data-ru="Сложный процент" data-en="Compound Interest" data-ar="الفائدة المركبة">Сложный процент</h3></div>
+        <div class="calc-card" data-calc="5"><i class="fas fa-home"></i><h3 data-ru="Ипотека + досрочка" data-en="Mortgage + Prepay" data-ar="الرهن + السداد المبكر">Ипотека + досрочка</h3></div>
+        <div class="calc-card" data-calc="6"><i class="fas fa-bullseye"></i><h3 data-ru="Накопить на цель" data-en="Save for Goal" data-ar="الادخار لهدف">Накопить на цель</h3></div>
+        <div class="calc-card" data-calc="7"><i class="fas fa-piggy-bank"></i><h3 data-ru="Налог на вклады" data-en="Deposit Tax" data-ar="ضريبة الودائع">Налог на вклады</h3></div>
+        <div class="calc-card" data-calc="8"><i class="fas fa-hand-holding-dollar"></i><h3 data-ru="Прогрессивный НДФЛ" data-en="Progressive Tax" data-ar="الضريبة التصاعدية">Прогрессивный НДФЛ</h3></div>
       </div>
 
-      <!-- Открытый калькулятор -->
       <div id="calcArea" class="card hidden">
         <div class="back" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> <span data-ru="Назад" data-en="Back" data-ar="رجوع">Назад</span></div>
         <div id="calcContent"></div>
@@ -182,7 +212,6 @@
         <div id="chartContainer" class="chart-box hidden"><canvas id="calcChart"></canvas></div>
       </div>
 
-      <!-- Конвертер -->
       <div class="card">
         <h3 data-ru="Конвертер валют" data-en="Currency Converter" data-ar="محول العملات">Конвертер валют</h3>
         <input id="amount" type="number" value="10000" placeholder="Сумма">
@@ -194,38 +223,44 @@
       </div>
 
       <div class="disclaimer">
-        <strong>Важно:</strong> Это образовательный проект. Все расчёты приблизительные. Не является инвестиционной рекомендацией.
+        <strong data-ru="Важно:" data-en="Important:" data-ar="هام:">Важно:</strong> 
+        <span data-ru="Это не инвестиционная рекомендация. Расчёты приблизительные и образовательные. Используйте на свой страх и риск."
+              data-en="This is not investment advice. Calculations are approximate and educational. Use at your own risk."
+              data-ar="ليس توصية استثمارية. الحسابات تقريبية وتعليمية. استخدم على مسؤوليتك الخاصة.">
+          Это не инвестиционная рекомендация. Расчёты приблизительные и образовательные. Используйте на свой страх и риск.
+        </span>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// === Язык ===
+// Язык
 let currentLang = 'ru';
-const langBtns = document.querySelectorAll('.lang-btn');
-langBtns.forEach(btn => {
+document.querySelectorAll('.lang-btn').forEach(btn => {
   btn.onclick = () => {
     currentLang = btn.dataset.lang;
-    langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
     document.querySelectorAll('[data-ru]').forEach(el => {
-      el.textContent = el.getAttribute(`data-${currentLang}`) || el.getAttribute('data-ru');
+      const key = `data-${currentLang}`;
+      el.textContent = el.hasAttribute(key) ? el.getAttribute(key) : el.getAttribute('data-ru');
     });
   };
 });
 
-// === Тема ===
-const themeBtn = document.getElementById('themeToggle');
+// Тема
+const themeToggle = document.getElementById('themeToggle');
 if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
-themeBtn.onclick = () => {
+themeToggle.innerHTML = document.body.classList.contains('light') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+themeToggle.onclick = () => {
   document.body.classList.toggle('light');
   localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
-  themeBtn.innerHTML = document.body.classList.contains('light') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  themeToggle.innerHTML = document.body.classList.contains('light') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 };
 
-// === Курсы ЦБ ===
-let rates = {RUB:1, USD:77.05, EUR:91.05, CNY:11.11};
-async function loadCBR() {
+// Курсы ЦБ
+let rates = { RUB: 1, USD: 77.05, EUR: 91.05, CNY: 11.11 };
+async function loadRates() {
   try {
     const res = await fetch('https://www.cbr-xml-daily.ru/daily_json.js');
     const data = await res.json();
@@ -233,15 +268,12 @@ async function loadCBR() {
     rates.EUR = data.Valute.EUR.Value;
     rates.CNY = data.Valute.CNY.Value;
     document.getElementById('cbrUpdate').textContent = `ЦБ РФ • ${new Date().toLocaleTimeString('ru-RU')}`;
-  } catch(e) {}
-  
-  document.getElementById('ratesDisplay').innerHTML = `
+  } catch {}
+  document.getElementById('rates').innerHTML = `
     USD: ${rates.USD.toFixed(2)} ₽<br>
     EUR: ${rates.EUR.toFixed(2)} ₽<br>
     CNY: ${rates.CNY.toFixed(2)} ₽
   `;
-
-  // Заполняем селекты конвертера
   const from = document.getElementById('from');
   const to = document.getElementById('to');
   from.innerHTML = to.innerHTML = '';
@@ -251,8 +283,8 @@ async function loadCBR() {
   });
   to.value = 'RUB';
 }
-loadCBR();
-setInterval(loadCBR, 300000);
+loadRates();
+setInterval(loadRates, 300000);
 
 function convertCurrency() {
   const amt = +document.getElementById('amount').value || 0;
@@ -260,17 +292,225 @@ function convertCurrency() {
   const t = document.getElementById('to').value;
   if (amt <= 0) return;
   const rub = amt * rates[fr];
-  const result = rub / rates[t];
-  document.getElementById('convResult').innerHTML = `${amt.toLocaleString()} ${fr} ≈ <b>${result.toFixed(2)} ${t}</b>`;
+  const res = rub / rates[t];
+  document.getElementById('convResult').innerHTML = `${amt.toLocaleString()} ${fr} ≈ <b>${res.toFixed(2)} ${t}</b>`;
 }
 
-// === Калькуляторы (9 штук) ===
-const calcs = [ /* здесь большой массив с 9 калькуляторами */ ];
-// (Чтобы не делать сообщение слишком длинным, я оставил только структуру. Полный код с 9 калькуляторами + переводы + графики я могу дать в следующем сообщении, если нужно.)
+// Калькуляторы
+document.querySelectorAll('.calc-card').forEach(card => {
+  card.onclick = () => openCalc(card.dataset.calc);
+});
 
-// Для экономии места сейчас даю готовый шаблон. Скажи «давай полный код с 9 калькуляторами», и я пришлю финальную версию объёмом ~950 строк с полным функционалом.
+let currentChart = null;
 
-alert("Сайт почти готов! Хочешь сразу полную версию с 9 калькуляторами, графиками и переводами на арабский/английский? Напиши «полный код» — пришлю одним сообщением.");
+function openCalc(id) {
+  document.getElementById('calcMenu').classList.add('hidden');
+  document.getElementById('calcArea').classList.remove('hidden');
+
+  const content = document.getElementById('calcContent');
+  content.innerHTML = '';
+  document.getElementById('calcResult').innerHTML = '';
+  document.getElementById('chartContainer').classList.add('hidden');
+  if (currentChart) currentChart.destroy();
+
+  let html = '';
+  if (id === '1') {
+    html = `
+      <h2 data-ru="Реальная доходность" data-en="Real Yield" data-ar="العائد الحقيقي">Реальная доходность</h2>
+      <input id="sum" type="number" placeholder="Сумма ₽">
+      <input id="yield" type="number" step="0.1" placeholder="% доходности годовых">
+      <input id="infl" type="number" step="0.1" placeholder="% инфляции годовых">
+      <button onclick="calcRealYield()">Рассчитать</button>`;
+  } else if (id === '2') {
+    html = `
+      <h2 data-ru="Потери от девальвации" data-en="Devaluation Loss" data-ar="خسائر التخفيض">Потери от девальвации</h2>
+      <input id="sumD" type="number" placeholder="Сумма в валюте">
+      <input id="fall" type="number" step="0.1" placeholder="% падения рубля">
+      <button onclick="calcDeval()">Рассчитать</button>`;
+  } else if (id === '3') {
+    html = `
+      <h2 data-ru="Реальная зарплата" data-en="Real Salary" data-ar="الراتب الحقيقي">Реальная зарплата</h2>
+      <input id="salary" type="number" placeholder="Зарплата ₽/мес">
+      <input id="inflS" type="number" step="0.1" placeholder="% инфляции годовых">
+      <button onclick="calcRealSalary()">Рассчитать</button>`;
+  } else if (id === '4') {
+    html = `
+      <h2 data-ru="Сложный процент" data-en="Compound Interest" data-ar="الفائدة المركبة">Сложный процент</h2>
+      <input id="start" type="number" placeholder="Начальная сумма ₽">
+      <input id="rate" type="number" step="0.1" placeholder="% годовых">
+      <input id="years" type="number" placeholder="Срок, лет">
+      <input id="add" type="number" placeholder="Пополнение в мес ₽" value="0">
+      <button onclick="calcCompound()">Рассчитать + график</button>`;
+  } else if (id === '5') {
+    html = `
+      <h2 data-ru="Ипотека + досрочка" data-en="Mortgage + Prepay" data-ar="الرهن + السداد المبكر">Ипотека + досрочка</h2>
+      <input id="loan" type="number" value="5000000" placeholder="Сумма кредита ₽">
+      <input id="rateIp" type="number" value="12" step="0.1" placeholder="% годовых">
+      <input id="term" type="number" value="20" placeholder="Срок, лет">
+      <input id="extra" type="number" value="20000" placeholder="Досрочный платёж в мес ₽">
+      <button onclick="calcMortgage()">Рассчитать + график</button>`;
+  } else if (id === '6') {
+    html = `
+      <h2 data-ru="Накопить на цель" data-en="Save for Goal" data-ar="الادخار لهدف">Накопить на цель</h2>
+      <input id="target" type="number" value="3000000" placeholder="Цель ₽">
+      <input id="time" type="number" value="5" placeholder="Через лет">
+      <input id="rateGoal" type="number" value="10" step="0.1" placeholder="% годовых">
+      <button onclick="calcGoal()">Рассчитать</button>`;
+  } else if (id === '7') {
+    html = `
+      <h2 data-ru="Налог на вклады 2025–2026" data-en="Deposit Tax 2025–2026" data-ar="ضريبة الودائع 2025-2026">Налог на вклады 2025–2026</h2>
+      <input id="dep" type="number" value="2000000" placeholder="Сумма вклада ₽">
+      <input id="depRate" type="number" value="15" step="0.1" placeholder="% по вкладу">
+      <input id="keyRate" type="number" value="21" step="0.1" placeholder="Макс ключевая 2025">
+      <button onclick="calcTaxDeposit()">Рассчитать</button>`;
+  } else if (id === '8') {
+    html = `
+      <h2 data-ru="Прогрессивный НДФЛ 2026" data-en="Progressive PIT 2026" data-ar="الضريبة التصاعدية 2026">Прогрессивный НДФЛ 2026</h2>
+      <input id="income" type="number" value="5000000" placeholder="Годовой доход ₽">
+      <button onclick="calcProgressiveTax()">Рассчитать</button>`;
+  }
+
+  content.innerHTML = html;
+}
+
+function backToMenu() {
+  document.getElementById('calcArea').classList.add('hidden');
+  document.getElementById('calcMenu').classList.remove('hidden');
+  if (currentChart) currentChart.destroy();
+}
+
+// Расчёты
+function showRes(text, err = false) {
+  const el = document.getElementById('calcResult');
+  el.innerHTML = text;
+  el.className = 'result' + (err ? ' error' : '');
+}
+
+function calcRealYield() {
+  const s = +document.getElementById('sum').value || 0;
+  const y = (+document.getElementById('yield').value || 0) / 100;
+  const i = (+document.getElementById('infl').value || 0) / 100;
+  if (s <= 0) return showRes('Введите сумму > 0', true);
+  const res = s * (1 + y) / (1 + i);
+  showRes(`Через год ≈ ${res.toLocaleString('ru-RU', {maximumFractionDigits:0})} ₽`);
+}
+
+function calcDeval() {
+  const s = +document.getElementById('sumD').value || 0;
+  const f = (+document.getElementById('fall').value || 0) / 100;
+  if (s <= 0) return showRes('Введите сумму > 0', true);
+  const res = s * (1 - f);
+  showRes(`Останется ≈ ${res.toLocaleString('ru-RU', {minimumFractionDigits:2})}`);
+}
+
+function calcRealSalary() {
+  const s = +document.getElementById('salary').value || 0;
+  const i = (+document.getElementById('inflS').value || 0) / 100;
+  if (s <= 0) return showRes('Введите зарплату > 0', true);
+  const res = s / (1 + i);
+  showRes(`Реально ≈ ${res.toLocaleString('ru-RU', {maximumFractionDigits:0})} ₽/мес`);
+}
+
+function calcCompound() {
+  const p = +document.getElementById('start').value || 0;
+  const r = (+document.getElementById('rate').value || 0) / 100;
+  const y = +document.getElementById('years').value || 0;
+  const m = +document.getElementById('add').value || 0;
+  if (p <= 0 || y <= 0) return showRes('Проверьте данные', true);
+
+  let bal = p;
+  const labels = Array.from({length: y+1}, (_,i) => `Год ${i}`);
+  const data = [Math.round(bal)];
+
+  for (let i = 1; i <= y; i++) {
+    bal = bal * (1 + r) + m * 12;
+    data.push(Math.round(bal));
+  }
+
+  showRes(`Через ${y} лет ≈ <b>${Math.round(bal).toLocaleString('ru-RU')} ₽</b>`);
+  drawChart(labels, data, 'Рост капитала', '#34d399');
+}
+
+function calcMortgage() {
+  const s = +document.getElementById('loan').value || 0;
+  const ry = (+document.getElementById('rateIp').value || 0) / 100;
+  const y = +document.getElementById('term').value || 0;
+  const ex = +document.getElementById('extra').value || 0;
+  if (s <= 0 || y <= 0) return showRes('Проверьте данные', true);
+
+  const rm = ry / 12;
+  const n = y * 12;
+  let bal = s, paid = 0, m = 0;
+  const base = s * rm / (1 - Math.pow(1 + rm, -n));
+  const labels = [];
+  const data = [];
+
+  while (bal > 0 && m < n + 120) {
+    const int = bal * rm;
+    let pay = base + ex;
+    if (pay > bal + int) pay = bal + int;
+    bal = bal + int - pay;
+    paid += pay;
+    m++;
+    if (m % 12 === 0 || bal <= 0) {
+      labels.push(`Год ${Math.floor(m/12)}${bal <= 0 ? ' (погашен)' : ''}`);
+      data.push(Math.max(0, Math.round(bal)));
+    }
+  }
+
+  const over = paid - s;
+  showRes(`Срок ≈ ${Math.floor(m/12)} лет ${m%12} мес<br>Переплата ≈ ${Math.round(over).toLocaleString('ru-RU')} ₽`);
+  drawChart(labels, data, 'Остаток долга', '#f87171');
+}
+
+function calcGoal() {
+  const g = +document.getElementById('target').value || 0;
+  const y = +document.getElementById('time').value || 1;
+  const r = (+document.getElementById('rateGoal').value || 0) / 100;
+  if (g <= 0 || y <= 0) return showRes('Ошибка в данных', true);
+
+  const rm = r / 12;
+  const n = y * 12;
+  let monthly = (g * rm) / (Math.pow(1 + rm, n) - 1) || g / n;
+  showRes(`Откладывать ≈ <b>${Math.round(monthly).toLocaleString('ru-RU')} ₽/мес</b>`);
+}
+
+function calcTaxDeposit() {
+  const d = +document.getElementById('dep').value || 0;
+  const r = (+document.getElementById('depRate').value || 0) / 100;
+  const k = (+document.getElementById('keyRate').value || 0) / 100;
+  if (d <= 0) return showRes('Введите сумму', true);
+
+  const inc = d * r;
+  const free = 1_000_000 * k;
+  const tax = Math.max(0, inc - free) * 0.13;
+  showRes(`Проценты ≈ ${Math.round(inc).toLocaleString()} ₽<br>Налог ≈ ${Math.round(tax).toLocaleString()} ₽<br>Чистыми ≈ ${Math.round(inc - tax).toLocaleString()} ₽`);
+}
+
+function calcProgressiveTax() {
+  const income = +document.getElementById('income').value || 0;
+  if (income <= 0) return showRes('Введите доход', true);
+
+  let tax = 0;
+  if (income <= 2_400_000) tax = income * 0.13;
+  else if (income <= 5_000_000) tax = 2_400_000 * 0.13 + (income - 2_400_000) * 0.15;
+  else tax = 2_400_000 * 0.13 + 2_600_000 * 0.15 + (income - 5_000_000) * 0.18; // упрощённо
+
+  const net = income - tax;
+  showRes(`НДФЛ ≈ ${Math.round(tax).toLocaleString()} ₽<br>На руки ≈ ${Math.round(net).toLocaleString()} ₽`);
+}
+
+function drawChart(labels, data, label, color) {
+  const ctx = document.getElementById('calcChart');
+  document.getElementById('chartContainer').classList.remove('hidden');
+  if (currentChart) currentChart.destroy();
+
+  currentChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label, data, borderColor: color, backgroundColor: color+'40', tension: 0.3, fill: true }] },
+    options: { responsive: true, scales: { y: { beginAtZero: false } } }
+  });
+}
 </script>
 </body>
 </html>
