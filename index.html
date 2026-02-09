@@ -139,6 +139,8 @@ margin-bottom:10px;
 <div class="card calc" onclick="openCalc(2)">Потери от девальвации</div>
 <div class="card calc" onclick="openCalc(3)">Реальная зарплата</div>
 <div class="card calc" onclick="openCalc(4)">Сложные проценты</div>
+<div class="card calc" onclick="openCalc(5)">Ипотека + досрочка</div>
+<div class="card calc" onclick="openCalc(6)">Откладывать на цель</div>
 </div>
 <div id="calc" class="card hidden">
 <div class="back" onclick="back()">← Назад</div>
@@ -161,6 +163,9 @@ margin-bottom:10px;
 </a>
 </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 const calcs=[
 `<h3>Реальная доходность</h3>
@@ -168,20 +173,39 @@ const calcs=[
 <input id="p" placeholder="% дохода">
 <input id="i" placeholder="% инфляции">
 <button onclick="res(a.value*(1+p.value/100)/(1+i.value/100))">Рассчитать</button>`,
+
 `<h3>Потери от девальвации</h3>
 <input id="a" placeholder="Сумма">
 <input id="p" placeholder="% падения">
 <button onclick="res(a.value*(1-p.value/100))">Рассчитать</button>`,
+
 `<h3>Реальная зарплата</h3>
 <input id="a" placeholder="Зарплата">
 <input id="i" placeholder="% инфляции">
 <button onclick="res(a.value/(1+i.value/100))">Рассчитать</button>`,
+
 `<h3>Сложные проценты</h3>
 <input id="a" placeholder="Сумма">
 <input id="p" placeholder="% годовых">
 <input id="y" placeholder="Лет">
-<button onclick="res(a.value*Math.pow(1+p.value/100,y.value))">Рассчитать</button>`
+<button onclick="res(a.value*Math.pow(1+p.value/100,y.value))">Рассчитать</button>`,
+
+`<h3>Ипотека + досрочка</h3>
+<input id="ipSum" type="number" placeholder="Сумма кредита" value="5000000">
+<input id="ipRate" type="number" placeholder="Ставка % годовых" value="12" step="0.1">
+<input id="ipYears" type="number" placeholder="Срок лет" value="20">
+<input id="ipExtra" type="number" placeholder="Досрочный платёж в мес" value="20000">
+<button onclick="calcIpoteka()">Рассчитать</button>
+<div id="ipRes" style="margin-top:12px;color:#88ffaa"></div>`,
+
+`<h3>Откладывать на цель</h3>
+<input id="goalSum" type="number" placeholder="Цель (₽)" value="3000000">
+<input id="goalYears" type="number" placeholder="Через сколько лет" value="5">
+<input id="goalRate" type="number" placeholder="Доходность % годовых" value="10" step="0.1">
+<button onclick="calcGoal()">Рассчитать</button>
+<div id="goalRes" style="margin-top:12px;color:#88ffaa"></div>`
 ];
+
 function openCalc(i){
 menu.classList.add("hidden");
 calc.classList.remove("hidden");
@@ -195,8 +219,50 @@ function res(v){
 content.innerHTML+=`<p><b>Результат:</b> ${Number(v).toFixed(2)}</p>`;
 }
 
+// Новые функции расчётов (добавлены в конец)
+function calcIpoteka() {
+  const sum = parseFloat(document.getElementById('ipSum').value) || 0;
+  const rateYear = parseFloat(document.getElementById('ipRate').value) / 100 || 0;
+  const years = parseFloat(document.getElementById('ipYears').value) || 0;
+  const extra = parseFloat(document.getElementById('ipExtra').value) || 0;
+
+  const rate = rateYear / 12;
+  const months = years * 12;
+  let balance = sum;
+  let totalPay = 0;
+  let m = 0;
+
+  while (balance > 0 && m < months) {
+    const interest = balance * rate;
+    let payment = (sum * rate) / (1 - Math.pow(1 + rate, -months)) + extra;
+    if (payment > balance + interest) payment = balance + interest;
+    balance = balance + interest - payment;
+    totalPay += payment;
+    m++;
+  }
+
+  const overpay = totalPay - sum;
+  document.getElementById('ipRes').innerHTML = 
+    `Срок: ${Math.ceil(m/12)} лет ${m%12} мес<br>` +
+    `Переплата: ${Math.round(overpay).toLocaleString()} ₽`;
+}
+
+function calcGoal() {
+  const goal = parseFloat(document.getElementById('goalSum').value) || 0;
+  const years = parseFloat(document.getElementById('goalYears').value) || 1;
+  const rateYear = parseFloat(document.getElementById('goalRate').value) / 100 || 0;
+
+  const rate = rateYear / 12;
+  const months = years * 12;
+  const monthly = (goal * rate) / (Math.pow(1 + rate, months) - 1);
+
+  document.getElementById('goalRes').innerHTML = 
+    `Откладывать ≈ ${Math.round(monthly).toLocaleString()} ₽ в месяц<br>` +
+    `При доходности ${rateYear*100}% годовых`;
+}
+
 // === РЕАЛЬНЫЕ КУРСЫ ЦБ РФ ===
-let cbrRates = { RUB: 1, USD: 92.45, EUR: 98.12, CNY: 12.78 }; // запасные
+let cbrRates = { RUB: 1, USD: 92.45, EUR: 98.12, CNY: 12.78 };
 
 async function updateCBR() {
   try {
@@ -211,26 +277,23 @@ async function updateCBR() {
       `Курсы ЦБ РФ • обновлено ${new Date().toLocaleTimeString('ru-RU')}`;
   } catch(e) {
     document.getElementById('cbr-update').textContent = 
-      `Курсы ЦБ РФ • ошибка загрузки (использованы запасные)`;
+      `Курсы ЦБ РФ • ошибка (использованы запасные)`;
   }
 
-  // Заполняем селекты
-  const fromSel = document.getElementById('from');
-  const toSel = document.getElementById('to');
-  fromSel.innerHTML = '';
-  toSel.innerHTML = '';
+  const from = document.getElementById('from');
+  const to = document.getElementById('to');
+  from.innerHTML = '';
+  to.innerHTML = '';
   Object.keys(cbrRates).forEach(key => {
-    fromSel.innerHTML += `<option value="${key}">${key}</option>`;
-    toSel.innerHTML += `<option value="${key}">${key}</option>`;
+    from.innerHTML += `<option value="${key}">${key}</option>`;
+    to.innerHTML += `<option value="${key}">${key}</option>`;
   });
-  toSel.value = 'RUB';
+  to.value = 'RUB';
 }
 
-// Загружаем курсы сразу и каждые 60 секунд
 updateCBR();
 setInterval(updateCBR, 60000);
 
-// === КОНВЕРТЕР ===
 function convert() {
   const amt = parseFloat(document.getElementById('amount').value) || 0;
   const fr = document.getElementById('from').value;
