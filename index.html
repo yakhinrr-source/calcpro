@@ -2,247 +2,277 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>S&P Finance</title>
+<title>Скучно, но прибыльно</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;overflow-x:hidden}
-a{color:#38bdf8;text-decoration:none}
-.container{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
-.sidebar{background:#020617;padding:15px;border-right:1px solid #1e293b;position:sticky;top:0;height:100vh;overflow-y:auto}
-.main{padding:0;display:flex;flex-direction:column}
-.header{
-  position:sticky;top:0;background:#0f172a;z-index:1000;
-  padding:16px 24px;font-size:2rem;font-weight:700;
-  border-bottom:1px solid #1e293b;text-align:center;
+body{
+margin:0;
+font-family:Inter,Arial;
+background:#0b0f1a;
+color:#eaeaea;
 }
-.news,.tiles,.calc,.btc-chart{background:#020617;border:1px solid #1e293b;border-radius:10px;padding:15px;margin:15px}
-.news-item{display:flex;gap:10px;margin-bottom:10px}
-.news-item img{width:70px;height:70px;object-fit:cover;border-radius:8px}
-.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-.tile{cursor:pointer;text-align:center;padding:40px;font-size:18px}
-.tile:hover{background:#020617cc}
-input,select,button{width:100%;margin:6px 0;padding:7px;border-radius:6px;border:none}
-button{background:#38bdf8;color:#020617;cursor:pointer}
-.back{cursor:pointer;margin-bottom:10px;display:inline-block}
-footer{text-align:center;border-top:1px solid #1e293b;padding:10px}
-marquee{color:#94a3b8;margin-bottom:10px;font-size:1.1rem}
-.calc{display:none}
-.btc-chart{height:320px}
+.main{
+display:flex;
+gap:24px;
+padding:24px;
+}
+.left{
+width:360px;
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+.right{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:24px;
+}
+.header{
+display:flex;
+align-items:center;
+gap:16px;
+}
+.header img{
+width:64px;
+height:64px;
+border-radius:16px;
+}
+h1{
+margin:0;
+font-size:34px;
+}
+.subtitle{
+color:#9aa4c7;
+font-size:16px;
+}
+.card{
+background:#141a2a;
+border-radius:18px;
+padding:20px;
+}
+.news-ticker{
+white-space:nowrap;
+overflow:hidden;
+border-radius:12px;
+background:#141a2a;
+padding:12px;
+}
+.news-ticker span{
+display:inline-block;
+padding-left:100%;
+animation:scroll 40s linear infinite;
+}
+@keyframes scroll{
+from{transform:translateX(0);}
+to{transform:translateX(-100%);}
+}
+.news{
+display:grid;
+grid-template-columns:1fr;
+gap:14px;
+}
+.news-item{
+background:#141a2a;
+border-radius:14px;
+overflow:hidden;
+}
+.news-item img{
+width:100%;
+height:130px;
+object-fit:cover;
+}
+.news-item a{
+display:block;
+padding:10px;
+color:#8ab4ff;
+text-decoration:none;
+font-size:14px;
+}
+.tiles{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:20px;
+}
+.tile{
+background:#1b2238;
+border-radius:20px;
+padding:28px;
+text-align:center;
+cursor:pointer;
+font-size:17px;
+transition:.2s;
+}
+.tile:hover{transform:translateY(-4px);}
+.calc{
+display:none;
+background:#141a2a;
+border-radius:20px;
+padding:24px;
+}
+.calc input{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:8px;
+border:none;
+}
+.calc button{
+margin-top:10px;
+width:100%;
+padding:10px;
+border:none;
+border-radius:8px;
+background:#3b82f6;
+color:#fff;
+cursor:pointer;
+}
+.back{
+color:#8ab4ff;
+cursor:pointer;
+margin-bottom:10px;
+display:inline-block;
+}
+.converter select,input{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:8px;
+border:none;
+}
+footer{
+text-align:center;
+padding:20px;
+}
+footer a{
+color:#3b82f6;
+font-size:18px;
+text-decoration:none;
+}
 </style>
 </head>
+
 <body>
 
-<div class="container">
+<div class="main">
 
-  <!-- ЛЕВАЯ ПАНЕЛЬ – КУРСЫ (как у тебя) -->
-  <aside class="sidebar">
-    <h3 style="text-align:center;">Рынки</h3>
-    <div style="width:100%;height:600px;background:#131722;border-radius:12px;overflow:hidden">
-      <script src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-      {
-      "colorTheme":"dark",
-      "locale":"ru",
-      "width":"100%",
-      "height":"100%",
-      "showChart":false,
-      "isTransparent":true,
-      "tabs":[
-      {"title":"Валюты","symbols":[
-      {"s":"FX_IDC:USDRUB"},{"s":"FX_IDC:EURRUB"},{"s":"FX_IDC:CNYRUB"}]},
-      {"title":"Крипта","symbols":[
-      {"s":"BINANCE:BTCUSDT"},{"s":"BINANCE:ETHUSDT"},{"s":"OKX:TONUSDT"}]},
-      {"title":"Ресурсы","symbols":[
-      {"s":"OANDA:XAUUSD"},{"s":"TVC:UKOIL"}]}
-      ]
-      }
-      </script>
-    </div>
-  </aside>
+<!-- ЛЕВАЯ КОЛОНКА -->
+<div class="left">
 
-  <!-- ОСНОВНОЙ КОНТЕНТ -->
-  <main class="main">
-
-    <!-- ФИКСИРОВАННЫЙ ЗАГОЛОВОК -->
-    <div class="header">S&P Finance</div>
-
-    <!-- НОВОСТИ (онлайн, свежие) -->
-    <section class="news">
-      <h2>Новости экономики, политики, крипты</h2>
-      <marquee id="ticker" scrollamount="5">Загрузка новостей...</marquee>
-      <div id="news"></div>
-    </section>
-
-    <!-- ЖИВОЙ ГРАФИК BITCOIN -->
-    <section class="btc-chart">
-      <h2>Bitcoin (BTC/USDT)</h2>
-      <div class="tradingview-widget-container">
-        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-        <script type="text/javascript">
-        new TradingView.widget({
-          "width": "100%",
-          "height": 300,
-          "symbol": "BINANCE:BTCUSDT",
-          "interval": "60",
-          "timezone": "Etc/UTC",
-          "theme": "dark",
-          "style": "1",
-          "locale": "ru",
-          "toolbar_bg": "#f1f3f6",
-          "enable_publishing": false,
-          "allow_symbol_change": true,
-          "container_id": "tvchart"
-        });
-        </script>
-        <div id="tvchart"></div>
-      </div>
-    </section>
-
-    <!-- ПЛИТКИ С КАЛЬКУЛЯТОРАМИ -->
-    <section id="content">
-      <div class="tiles" id="tiles">
-        <div class="tile" onclick="openCalc('deposit')">💰 Реальная доходность вклада</div>
-        <div class="tile" onclick="openCalc('deval')">📉 Потери от девальвации</div>
-        <div class="tile" onclick="openCalc('salary')">💸 Реальная зарплата</div>
-        <div class="tile" onclick="openCalc('compound')">📈 Сложные проценты</div>
-      </div>
-
-      <!-- Окно калькулятора -->
-      <div class="calc" id="calc"></div>
-    </section>
-
-    <!-- ФУТЕР С ССЫЛКОЙ -->
-    <footer>
-      <a href="https://t.me/s_p_finance" target="_blank"><strong>Канал S&P Finance</strong></a>
-    </footer>
-
-  </main>
-</div>
-
-<script>
-// === НОВОСТИ (онлайн, свежие) ===
-async function loadNews() {
-  const url = `https://newsapi.org/v2/everything?q=экономика OR политика OR крипта OR финансы OR ЦБ OR рубль&language=ru&sortBy=publishedAt&pageSize=8&apiKey=fa73b6b2c7d79ca71ee42f9b97d17ab5`;
-  try {
-    const r = await fetch(url);
-    const d = await r.json();
-    const ticker = document.getElementById('ticker');
-    const newsDiv = document.getElementById('news');
-    ticker.innerHTML = '';
-    newsDiv.innerHTML = '';
-    if (!d.articles || d.articles.length === 0) {
-      ticker.innerText = 'Новостей пока нет';
-      return;
-    }
-    d.articles.forEach(n => {
-      ticker.innerHTML += ` 📰 ${n.title} • `;
-      newsDiv.innerHTML += `
-        <div class="news-item">
-          <img src="${n.urlToImage || 'https://via.placeholder.com/70?text=News'}">
-          <div>
-            <a href="${n.url}" target="_blank">${n.title}</a>
-            <div style="font-size:0.85rem;color:#94a3b8;margin-top:4px">
-              ${new Date(n.publishedAt).toLocaleString('ru-RU')}
-            </div>
-          </div>
-        </div>`;
-    });
-  } catch(e) {
-    ticker.innerText = 'Ошибка загрузки новостей';
-  }
-}
-loadNews();
-setInterval(loadNews, 1800000); // каждые 30 минут
-
-// === КАЛЬКУЛЯТОРЫ (твои 4) ===
-function back() {
-  document.getElementById('calc').style.display = 'none';
-  document.getElementById('tiles').style.display = 'grid';
-}
-
-function openCalc(type) {
-  document.getElementById('tiles').style.display = 'none';
-  const calc = document.getElementById('calc');
-  calc.style.display = 'block';
-  calc.innerHTML = `<div class="back" onclick="back()">← На главную</div>`;
-
-  if (type === 'deposit') {
-    calc.innerHTML += `
-      <h3>Реальная доходность вклада</h3>
-      <input id="sum1" type="number" placeholder="Сумма вклада (₽)" value="100000">
-      <input id="rate1" type="number" placeholder="Ставка (% годовых)" value="12" step="0.1">
-      <input id="infl1" type="number" placeholder="Инфляция за год (%)" value="7" step="0.1">
-      <button onclick="calcDeposit()">Рассчитать</button>
-      <div id="res1" class="result"></div>`;
-  }
-  else if (type === 'deval') {
-    calc.innerHTML += `
-      <h3>Потери от девальвации</h3>
-      <input id="sum2" type="number" placeholder="Сумма в рублях" value="500000">
-      <input id="dev2" type="number" placeholder="Девальвация за год (%)" value="15" step="0.1">
-      <button onclick="calcDeval()">Рассчитать</button>
-      <div id="res2" class="result"></div>`;
-  }
-  else if (type === 'salary') {
-    calc.innerHTML += `
-      <h3>Реальная стоимость зарплаты</h3>
-      <input id="salary3" type="number" placeholder="Зарплата в месяц (₽)" value="80000">
-      <input id="infl3" type="number" placeholder="Инфляция за год (%)" value="8" step="0.1">
-      <button onclick="calcSalary()">Рассчитать</button>
-      <div id="res3" class="result"></div>`;
-  }
-  else if (type === 'compound') {
-    calc.innerHTML += `
-      <h3>Сложные проценты</h3>
-      <input id="principal" type="number" placeholder="Начальная сумма (₽)" value="100000">
-      <input id="rate4" type="number" placeholder="Годовая ставка (%)" value="10" step="0.1">
-      <input id="years" type="number" placeholder="Срок (лет)" value="5">
-      <select id="compound">
-        <option value="1">Ежегодно</option>
-        <option value="4">Ежеквартально</option>
-        <option value="12" selected>Ежемесячно</option>
-      </select>
-      <button onclick="calcCompound()">Рассчитать</button>
-      <div id="res4" class="result"></div>`;
-  }
-}
-
-// Функции расчётов
-function calcDeposit() {
-  const sum = parseFloat(document.getElementById('sum1').value) || 0;
-  const rate = parseFloat(document.getElementById('rate1').value) / 100 || 0;
-  const infl = parseFloat(document.getElementById('infl1').value) / 100 || 0;
-  const profit = sum * rate;
-  const real = profit - sum * infl;
-  const realRate = sum > 0 ? (real / sum * 100).toFixed(2) : 0;
-  document.getElementById('res1').innerHTML = 
-    `Доход за год: ${Math.round(profit).toLocaleString()} ₽<br>Реальная доходность: ${realRate}%`;
-}
-
-function calcDeval() {
-  const sum = parseFloat(document.getElementById('sum2').value) || 0;
-  const dev = parseFloat(document.getElementById('dev2').value) / 100 || 0;
-  const loss = sum * dev;
-  document.getElementById('res2').innerHTML = 
-    `Потери: ${Math.round(loss).toLocaleString()} ₽<br>Остаток: ${Math.round(sum * (1-dev)).toLocaleString()} ₽`;
-}
-
-function calcSalary() {
-  const sal = parseFloat(document.getElementById('salary3').value) || 0;
-  const infl = parseFloat(document.getElementById('infl3').value) / 100 || 0;
-  const real = sal * (1 - infl);
-  document.getElementById('res3').innerHTML = 
-    `Реальная зарплата через год: ${Math.round(real).toLocaleString()} ₽<br>Потеря: ${Math.round(sal * infl).toLocaleString()} ₽`;
-}
-
-function calcCompound() {
-  const p = parseFloat(document.getElementById('principal').value) || 0;
-  const r = parseFloat(document.getElementById('rate4').value) / 100 || 0;
-  const t = parseFloat(document.getElementById('years').value) || 0;
-  const n = parseInt(document.getElementById('compound').value) || 12;
-  const a = p * Math.pow(1 + r/n, n*t);
-  const profit = a - p;
-  document.getElementById('res4').innerHTML = 
-    `Итог: ${Math.round(a).toLocaleString()} ₽<br>Прибыль: ${Math.round(profit).toLocaleString()} ₽`;
+<!-- Курсы валют -->
+<div class="card">
+<div class="tradingview-widget-container">
+<script src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js">
+{
+"colorTheme":"dark",
+"showChart":false,
+"locale":"ru",
+"width":"100%",
+"height":"420",
+"isTransparent":true,
+"tabs":[
+{"title":"Валюты","symbols":[
+{"s":"FX_IDC:USDRUB"},
+{"s":"FX_IDC:EURRUB"},
+{"s":"FX_IDC:CNYRUB"}]},
+{"title":"Крипто","symbols":[
+{"s":"BINANCE:BTCUSDT"},
+{"s":"BINANCE:ETHUSDT"},
+{"s":"OKX:TONUSDT"}]}
+]
 }
 </script>
-</body>
-</html>
+</div>
+</div>
+
+<!-- НОВОСТИ ПОД КУРСАМИ -->
+<div class="news-ticker">
+<span id="ticker">Загрузка новостей...</span>
+</div>
+
+<div class="news" id="news"></div>
+
+</div>
+
+<!-- ПРАВАЯ ЧАСТЬ -->
+<div class="right">
+
+<!-- ШАПКА -->
+<div class="header">
+<img src="sovva.jpg" alt="logo">
+<div>
+<h1>Скучно, но прибыльно</h1>
+<div class="subtitle">Финансы · Крипта · Экономика</div>
+</div>
+</div>
+
+<!-- КУРС BTC -->
+<div class="card">
+<div class="tradingview-widget-container">
+<script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js">
+{
+"symbol":"BINANCE:BTCUSDT",
+"width":"100%",
+"height":"200",
+"locale":"ru",
+"colorTheme":"dark"
+}
+</script>
+</div>
+</div>
+
+<!-- КАЛЬКУЛЯТОРЫ -->
+<div class="tiles" id="tiles">
+<div class="tile" onclick="openCalc('deposit')">💰 Реальная доходность</div>
+<div class="tile" onclick="openCalc('deval')">📉 Девальвация</div>
+<div class="tile" onclick="openCalc('salary')">💵 Реальная зарплата</div>
+<div class="tile" onclick="openCalc('compound')">📈 Сложные проценты</div>
+</div>
+
+<div class="calc" id="calc"></div>
+
+<!-- КОНВЕРТЕР -->
+<div class="card converter">
+<h3>Конвертер валют</h3>
+<input id="amount" placeholder="Сумма">
+<select id="from"><option>USD</option><option>EUR</option><option>RUB</option></select>
+<select id="to"><option>RUB</option><option>USD</option><option>EUR</option></select>
+<button onclick="convert()">Конвертировать</button>
+<p id="convResult"></p>
+</div>
+
+</div>
+</div>
+
+<footer>
+<a href="https://t.me/s_p_finance" target="_blank">📊 Telegram: s_p_finance</a>
+</footer>
+
+<script>
+/* НОВОСТИ */
+const API="fa73b6b2c7d79ca71ee42f9b97d17ab5";
+async function loadNews(){
+const r=await fetch(`https://gnews.io/api/v4/search?q=finance OR crypto&lang=ru&max=5&token=${API}`);
+const d=await r.json();
+ticker.innerHTML=""; news.innerHTML="";
+d.articles.forEach(n=>{
+ticker.innerHTML+=` 📰 ${n.title} • `;
+news.innerHTML+=`
+<div class="news-item">
+<img src="${n.image||'https://via.placeholder.com/300'}">
+<a href="${n.url}" target="_blank">${n.title}</a>
+</div>`;
+});
+}
+loadNews();
+setInterval(loadNews,10800000);
+
+/* КАЛЬКУЛЯТОРЫ */
+function back(){calc.style.display="none";tiles.style.display="grid";}
+function openCalc(t){
+tiles.style.display="none"; calc.style.display="block";
+if(t==="deposit")calc.innerHTML=`<span class="back" onclick="back()">⬅ Назад</span><h3>Реальная доходность</h3><input id=s placeholder=Сумма><input id=r placeholder="%"><input id=i placeholder="Инфляция %"><button onclick="alert((s.value*(1+r.value/100)/(1+i.value/100)).toFixed(2))">Рассчитать</button>`;
+if(t==="deval")calc.in
