@@ -203,6 +203,7 @@
         <div class="calc-card" data-calc="6"><i class="fas fa-bullseye"></i><h3 data-ru="Накопить на цель" data-en="Save for Goal" data-ar="الادخار لهدف">Накопить на цель</h3></div>
         <div class="calc-card" data-calc="7"><i class="fas fa-piggy-bank"></i><h3 data-ru="Налог на вклады" data-en="Deposit Tax" data-ar="ضريبة الودائع">Налог на вклады</h3></div>
         <div class="calc-card" data-calc="8"><i class="fas fa-hand-holding-dollar"></i><h3 data-ru="Прогрессивный НДФЛ" data-en="Progressive Tax" data-ar="الضريبة التصاعدية">Прогрессивный НДФЛ</h3></div>
+        <div class="calc-card" data-calc="9"><i class="fas fa-exchange-alt"></i><h3 data-ru="Конвертер валют" data-en="Currency Converter" data-ar="محول العملات">Конвертер валют</h3></div>
       </div>
 
       <div id="calcArea" class="card hidden">
@@ -210,16 +211,6 @@
         <div id="calcContent"></div>
         <div id="calcResult" class="result"></div>
         <div id="chartContainer" class="chart-box hidden"><canvas id="calcChart"></canvas></div>
-      </div>
-
-      <div class="card">
-        <h3 data-ru="Конвертер валют" data-en="Currency Converter" data-ar="محول العملات">Конвертер валют</h3>
-        <input id="amount" type="number" value="10000" placeholder="Сумма">
-        <select id="from"></select>
-        <select id="to"></select>
-        <button onclick="convertCurrency()">Конвертировать</button>
-        <p id="convResult" style="margin-top:16px;font-size:1.4rem;font-weight:600;"></p>
-        <p id="cbrUpdate" style="color:var(--gray);font-size:0.9rem;">ЦБ РФ • обновление...</p>
       </div>
 
       <div class="disclaimer">
@@ -267,36 +258,17 @@ async function loadRates() {
     rates.USD = data.Valute.USD.Value;
     rates.EUR = data.Valute.EUR.Value;
     rates.CNY = data.Valute.CNY.Value;
-    document.getElementById('cbrUpdate').textContent = `ЦБ РФ • ${new Date().toLocaleTimeString('ru-RU')}`;
   } catch {}
   document.getElementById('rates').innerHTML = `
     USD: ${rates.USD.toFixed(2)} ₽<br>
     EUR: ${rates.EUR.toFixed(2)} ₽<br>
     CNY: ${rates.CNY.toFixed(2)} ₽
   `;
-  const from = document.getElementById('from');
-  const to = document.getElementById('to');
-  from.innerHTML = to.innerHTML = '';
-  Object.keys(rates).forEach(k => {
-    from.innerHTML += `<option value="${k}">${k}</option>`;
-    to.innerHTML += `<option value="${k}">${k}</option>`;
-  });
-  to.value = 'RUB';
 }
 loadRates();
 setInterval(loadRates, 300000);
 
-function convertCurrency() {
-  const amt = +document.getElementById('amount').value || 0;
-  const fr = document.getElementById('from').value;
-  const t = document.getElementById('to').value;
-  if (amt <= 0) return;
-  const rub = amt * rates[fr];
-  const res = rub / rates[t];
-  document.getElementById('convResult').innerHTML = `${amt.toLocaleString()} ${fr} ≈ <b>${res.toFixed(2)} ${t}</b>`;
-}
-
-// Калькуляторы
+// Открытие калькуляторов
 document.querySelectorAll('.calc-card').forEach(card => {
   card.onclick = () => openCalc(card.dataset.calc);
 });
@@ -314,6 +286,7 @@ function openCalc(id) {
   if (currentChart) currentChart.destroy();
 
   let html = '';
+
   if (id === '1') {
     html = `
       <h2 data-ru="Реальная доходность" data-en="Real Yield" data-ar="العائد الحقيقي">Реальная доходность</h2>
@@ -368,9 +341,28 @@ function openCalc(id) {
       <h2 data-ru="Прогрессивный НДФЛ 2026" data-en="Progressive PIT 2026" data-ar="الضريبة التصاعدية 2026">Прогрессивный НДФЛ 2026</h2>
       <input id="income" type="number" value="5000000" placeholder="Годовой доход ₽">
       <button onclick="calcProgressiveTax()">Рассчитать</button>`;
+  } else if (id === '9') {
+    html = `
+      <h2 data-ru="Конвертер валют (ЦБ РФ)" data-en="Currency Converter (CBR)" data-ar="محول العملات (البنك المركزي)">Конвертер валют</h2>
+      <input id="convAmount" type="number" value="10000" placeholder="Сумма">
+      <select id="convFrom"></select>
+      <select id="convTo"></select>
+      <button onclick="calcConverter()">Конвертировать</button>`;
   }
 
   content.innerHTML = html;
+
+  // Если открыли конвертер — заполняем селекты
+  if (id === '9') {
+    const from = document.getElementById('convFrom');
+    const to = document.getElementById('convTo');
+    from.innerHTML = to.innerHTML = '';
+    Object.keys(rates).forEach(k => {
+      from.innerHTML += `<option value="${k}">${k}</option>`;
+      to.innerHTML += `<option value="${k}">${k}</option>`;
+    });
+    to.value = 'RUB';
+  }
 }
 
 function backToMenu() {
@@ -379,7 +371,7 @@ function backToMenu() {
   if (currentChart) currentChart.destroy();
 }
 
-// Расчёты
+// Расчёты калькуляторов
 function showRes(text, err = false) {
   const el = document.getElementById('calcResult');
   el.innerHTML = text;
@@ -492,12 +484,22 @@ function calcProgressiveTax() {
   if (income <= 0) return showRes('Введите доход', true);
 
   let tax = 0;
-  if (income <= 2_400_000) tax = income * 0.13;
-  else if (income <= 5_000_000) tax = 2_400_000 * 0.13 + (income - 2_400_000) * 0.15;
-  else tax = 2_400_000 * 0.13 + 2_600_000 * 0.15 + (income - 5_000_000) * 0.18; // упрощённо
+  if (income <= 2400000) tax = income * 0.13;
+  else if (income <= 5000000) tax = 2400000 * 0.13 + (income - 2400000) * 0.15;
+  else tax = 2400000 * 0.13 + 2600000 * 0.15 + (income - 5000000) * 0.18; // упрощённо
 
   const net = income - tax;
   showRes(`НДФЛ ≈ ${Math.round(tax).toLocaleString()} ₽<br>На руки ≈ ${Math.round(net).toLocaleString()} ₽`);
+}
+
+function calcConverter() {
+  const amt = +document.getElementById('convAmount').value || 0;
+  const fr = document.getElementById('convFrom').value;
+  const t = document.getElementById('convTo').value;
+  if (amt <= 0) return showRes('Введите сумму > 0', true);
+  const rub = amt * rates[fr];
+  const res = rub / rates[t];
+  showRes(`${amt.toLocaleString()} ${fr} ≈ <b>${res.toFixed(2)} ${t}</b>`);
 }
 
 function drawChart(labels, data, label, color) {
