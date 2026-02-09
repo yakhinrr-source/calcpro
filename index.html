@@ -2,223 +2,228 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>S&P Finance</title>
+<title>Скучно, но прибыльно</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb}
-a{color:#38bdf8;text-decoration:none}
-.container{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
-.sidebar{background:#020617;padding:15px;border-right:1px solid #1e293b}
-.main{padding:15px;display:grid;grid-template-rows:auto auto 1fr auto;gap:15px}
-.panel,.news,.tile,.calc{background:#020617;border:1px solid #1e293b;border-radius:10px;padding:15px}
-.news-item{display:flex;gap:10px;margin-bottom:10px}
-.news-item img{width:70px;height:70px;object-fit:cover;border-radius:8px}
-.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-.tile{cursor:pointer;text-align:center;padding:40px;font-size:18px}
-.tile:hover{background:#020617cc}
-input,select,button{width:100%;margin:6px 0;padding:7px;border-radius:6px;border:none}
-button{background:#38bdf8;color:#020617;cursor:pointer}
-.back{cursor:pointer;margin-bottom:10px;display:inline-block}
-footer{text-align:center;border-top:1px solid #1e293b;padding:10px}
-canvas{background:#020617;border-radius:8px}
-marquee{color:#94a3b8;margin-bottom:10px}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{
+margin:0;
+background:#0b0f1a;
+color:#e5e7eb;
+display:flex;
+min-height:100vh;
+}
+.sidebar{
+width:360px;
+padding:15px;
+}
+.main{
+flex:1;
+padding:25px;
+}
+.card{
+background:#141a2a;
+border-radius:14px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+h1{margin:10px 0;font-size:34px}
+h3{margin-top:0}
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+.calc{
+cursor:pointer;
+text-align:center;
+padding:30px;
+font-size:16px;
+}
+.calc:hover{background:#1b2340}
+.hidden{display:none}
+input,select,button{
+width:100%;
+margin:6px 0;
+padding:10px;
+border-radius:8px;
+border:1px solid #2a355f;
+background:#0b0f1a;
+color:#fff;
+}
+button{
+background:#3b82f6;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+.back{
+cursor:pointer;
+color:#93c5fd;
+margin-bottom:10px;
+}
+a{color:#60a5fa;text-decoration:none}
+.logo{
+width:90px;
+display:block;
+margin-bottom:10px;
+}
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<!-- ЛЕВАЯ ПАНЕЛЬ -->
-<aside class="sidebar">
-<h3 style="text-align:center;">Рынки</h3>
+<!-- ЛЕВАЯ КОЛОНКА -->
+<div class="sidebar">
 
-<div style="width:100%;height:600px;background:#131722;border-radius:12px;overflow:hidden">
-<script src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+<!-- КУРСЫ -->
+<div class="card">
+<script src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js">
 {
 "colorTheme":"dark",
 "locale":"ru",
 "width":"100%",
-"height":"100%",
-"showChart":false,
+"height":"550",
 "isTransparent":true,
+"showChart":false,
 "tabs":[
 {"title":"Валюты","symbols":[
-{"s":"FX_IDC:USDRUB"},{"s":"FX_IDC:EURRUB"},{"s":"FX_IDC:CNYRUB"}]},
-{"title":"Крипта","symbols":[
-{"s":"BINANCE:BTCUSDT"},{"s":"BINANCE:ETHUSDT"},{"s":"OKX:TONUSDT"}]},
-{"title":"Ресурсы","symbols":[
-{"s":"OANDA:XAUUSD"},{"s":"TVC:UKOIL"}]}
+{"s":"FX_IDC:USDRUB"},
+{"s":"FX_IDC:EURRUB"},
+{"s":"FX_IDC:CNYRUB"}
+]},
+{"title":"Крипто","symbols":[
+{"s":"BINANCE:BTCUSDT"},
+{"s":"BINANCE:ETHUSDT"},
+{"s":"BINANCE:SOLUSDT"},
+{"s":"OKX:TONUSDT"}
+]}
 ]
 }
 </script>
 </div>
-</aside>
-
-<!-- ОСНОВНОЙ КОНТЕНТ -->
-<main class="main">
 
 <!-- НОВОСТИ -->
-<section class="news">
-<h2>Новости рынка</h2>
-<marquee id="ticker" scrollamount="5">Загрузка новостей...</marquee>
-<div id="news"></div>
-</section>
+<div class="card">
+<h3>Новости рынков</h3>
+<script src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js">
+{
+"colorTheme":"dark",
+"isTransparent":true,
+"displayMode":"adaptive",
+"locale":"ru",
+"market":"crypto",
+"height":"420"
+}
+</script>
+</div>
 
-<!-- BTC ГРАФИК -->
-<section class="panel">
-<h2>Bitcoin (BTC)</h2>
-<div class="tradingview-widget-container">
-<script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+</div>
+
+<!-- ПРАВАЯ ЧАСТЬ -->
+<div class="main">
+
+<img src="sovva.jpg" class="logo">
+<h1>Скучно, но прибыльно</h1>
+
+<!-- BTC -->
+<div class="card">
+<script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js">
 {
 "symbol":"BINANCE:BTCUSDT",
 "width":"100%",
-"height":"240",
+"height":"220",
 "locale":"ru",
+"dateRange":"1D",
 "colorTheme":"dark",
 "isTransparent":true
 }
 </script>
 </div>
-</section>
 
 <!-- КАЛЬКУЛЯТОРЫ -->
-<section id="content">
-<div class="tiles" id="tiles">
-<div class="tile" onclick="openCalc('compound')">📈 Сложный процент</div>
-<div class="tile" onclick="openCalc('profit')">💰 Прибыль / Убыток</div>
-<div class="tile" onclick="openCalc('risk')">⚠️ Риск-менеджмент</div>
-<div class="tile" onclick="openCalc('convert')">💱 Быстрый конвертер</div>
+<div id="menu" class="grid">
+<div class="card calc" onclick="openCalc(1)">Реальная доходность</div>
+<div class="card calc" onclick="openCalc(2)">Потери от девальвации</div>
+<div class="card calc" onclick="openCalc(3)">Реальная зарплата</div>
+<div class="card calc" onclick="openCalc(4)">Сложные проценты</div>
 </div>
-<div class="calc" id="calc" style="display:none"></div>
-</section>
 
-<!-- МУЛЬТИВАЛЮТНЫЙ КОНВЕРТЕР -->
-<section class="panel">
-<h3>Онлайн конвертация валют</h3>
-<input id="fxAmount" placeholder="Сумма">
+<div id="calc" class="card hidden">
+<div class="back" onclick="back()">← Назад</div>
+<div id="content"></div>
+</div>
 
-<select id="fxFrom">
-<option>USD</option><option>EUR</option><option>RUB</option>
-<option>CNY</option><option>BTC</option><option>ETH</option>
-</select>
+<!-- КОНВЕРТЕР -->
+<div class="card">
+<h3>Конвертер валют</h3>
+<input id="amount" placeholder="Сумма">
+<select id="from"></select>
+<select id="to"></select>
+<button onclick="convert()">Конвертировать</button>
+<p id="result"></p>
+</div>
 
-<select id="fxTo">
-<option>RUB</option><option>USD</option><option>EUR</option>
-<option>CNY</option><option>BTC</option><option>ETH</option>
-</select>
+<!-- TG -->
+<div class="card">
+<a href="https://t.me/s_p_finance" target="_blank">
+📊 Telegram-канал «Скучно, но прибыльно»
+</a>
+</div>
 
-<button onclick="fx()">Конвертировать</button>
-<div id="fxResult"></div>
-</section>
-
-<footer>
-📊 <a href="https://t.me/s_p_finance" target="_blank"><strong>S&P Finance</strong></a>
-</footer>
-
-</main>
 </div>
 
 <script>
-/* === КЛЮЧИ === */
-const NEWS_API_KEY = "fa73b6b2c7d79ca71ee42f9b97d17ab5";
-const FX_API_KEY   = "YOUR_FX_API_KEY";
-
-/* === НОВОСТИ (ОНЛАЙН) === */
-async function loadNews(){
-const url = `https://newsapi.org/v2/everything?q=finance OR crypto OR economy&language=ru&sortBy=publishedAt&pageSize=6&apiKey=${NEWS_API_KEY}`;
-const r = await fetch(url);
-const d = await r.json();
-
-news.innerHTML = "";
-ticker.innerHTML = "";
-
-if(!d.articles) {
-ticker.innerText = "Ошибка загрузки новостей";
-return;
-}
-
-d.articles.forEach(n=>{
-ticker.innerHTML += ` 📰 ${n.title} • `;
-news.innerHTML += `
-<div class="news-item">
-<img src="${n.urlToImage || 'https://via.placeholder.com/70'}">
-<div>
-<a href="${n.url}" target="_blank">${n.title}</a>
-</div>
-</div>`;
-});
-}
-loadNews();
-setInterval(loadNews, 1800000); // каждые 30 минут
-
-/* === КАЛЬКУЛЯТОРЫ === */
-function back(){calc.style.display="none";tiles.style.display="grid"}
-function openCalc(t){
-tiles.style.display="none";
-calc.style.display="block";
-
-if(t==="compound"){
-calc.innerHTML=`
-<span class="back" onclick="back()">⬅ Назад</span>
-<h3>Сложный процент</h3>
-<input id="s" placeholder="Сумма">
-<input id="r" placeholder="% годовых">
-<input id="y" placeholder="Лет">
-<button onclick="draw()">Рассчитать</button>
-<canvas id="chart" width="400" height="200"></canvas>`;
-}
-
-if(t==="profit"){
-calc.innerHTML=`
-<span class="back" onclick="back()">⬅ Назад</span>
-<h3>Прибыль / Убыток</h3>
-<input id="e" placeholder="Цена входа">
-<input id="x" placeholder="Цена выхода">
-<input id="q" placeholder="Количество">
-<button onclick="alert('Результат: '+((x.value-e.value)*q.value).toFixed(2))">Рассчитать</button>`;
-}
-
-if(t==="risk"){
-calc.innerHTML=`
-<span class="back" onclick="back()">⬅ Назад</span>
-<h3>Риск-менеджмент</h3>
-<input id="b" placeholder="Депозит">
-<input id="p" placeholder="Риск %">
-<input id="sl" placeholder="Стоп %">
-<button onclick="alert('Размер позиции: '+(b.value*(p.value/100)/(sl.value/100)).toFixed(2))">Рассчитать</button>`;
-}
-
-if(t==="convert"){
-calc.innerHTML=`
-<span class="back" onclick="back()">⬅ Назад</span>
-<h3>Быстрый конвертер</h3>
+const calcs=[
+`<h3>Реальная доходность</h3>
 <input id="a" placeholder="Сумма">
-<input id="c" placeholder="Курс">
-<button onclick="alert('Итого: '+(a.value*c.value))">Конвертировать</button>`;
+<input id="p" placeholder="% дохода">
+<input id="i" placeholder="% инфляции">
+<button onclick="res(a.value*(1+p.value/100)/(1+i.value/100))">Рассчитать</button>`,
+
+`<h3>Потери от девальвации</h3>
+<input id="a" placeholder="Сумма">
+<input id="p" placeholder="% падения">
+<button onclick="res(a.value*(1-p.value/100))">Рассчитать</button>`,
+
+`<h3>Реальная зарплата</h3>
+<input id="a" placeholder="Зарплата">
+<input id="i" placeholder="% инфляции">
+<button onclick="res(a.value/(1+i.value/100))">Рассчитать</button>`,
+
+`<h3>Сложные проценты</h3>
+<input id="a" placeholder="Сумма">
+<input id="p" placeholder="% годовых">
+<input id="y" placeholder="Лет">
+<button onclick="res(a.value*Math.pow(1+p.value/100,y.value))">Рассчитать</button>`
+];
+
+function openCalc(i){
+menu.classList.add("hidden");
+calc.classList.remove("hidden");
+content.innerHTML=calcs[i-1];
 }
+function back(){
+calc.classList.add("hidden");
+menu.classList.remove("hidden");
+}
+function res(v){
+content.innerHTML+=`<p><b>Результат:</b> ${Number(v).toFixed(2)}</p>`;
 }
 
-function draw(){
-let s=+document.getElementById("s").value;
-let r=+document.getElementById("r").value/100;
-let y=+document.getElementById("y").value;
-let ctx=document.getElementById("chart").getContext("2d");
-ctx.clearRect(0,0,400,200);
-ctx.beginPath();
-for(let i=0;i<=y;i++){
-let v=s*Math.pow(1+r,i)/10;
-ctx.lineTo(i*40,200-v);
-}
-ctx.strokeStyle="#38bdf8";
-ctx.stroke();
-}
+const curr=["USD","EUR","RUB","GBP","CNY","JPY","CHF","AUD","CAD","TRY","KZT","UAH","PLN","SEK","NOK"];
+curr.forEach(c=>{
+from.innerHTML+=`<option>${c}</option>`;
+to.innerHTML+=`<option>${c}</option>`;
+});
+to.value="RUB";
 
-/* === FX МУЛЬТИ === */
-async function fx(){
-const r = await fetch(`https://v6.exchangerate-api.com/v6/${FX_API_KEY}/latest/${fxFrom.value}`);
-const d = await r.json();
-fxResult.innerText =
-"Результат: " + (fxAmount.value * d.conversion_rates[fxTo.value]).toFixed(4);
+const rates={USD:1,EUR:0.93,RUB:92,GBP:0.79,CNY:7.2,JPY:148,CHF:0.88,AUD:1.52,CAD:1.36,TRY:30,KZT:460,UAH:38,PLN:4,SEK:10.4,NOK:10.6};
+
+function convert(){
+result.innerText=(amount.value/rates[from.value]*rates[to.value]).toFixed(2)+" "+to.value;
 }
 </script>
 
